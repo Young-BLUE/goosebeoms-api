@@ -11,6 +11,7 @@ public enum ErrorCode {
     SHOW_NOT_FOUND("공연을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     SCHEDULE_NOT_FOUND("공연 회차를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     SEAT_NOT_AVAILABLE("선택할 수 없는 좌석입니다.", HttpStatus.CONFLICT),
+    SEAT_CONFLICT("다른 사용자가 동일한 좌석을 선택했습니다. 다시 시도해주세요.", HttpStatus.CONFLICT),
     INSUFFICIENT_SEATS("잔여 좌석이 부족합니다.", HttpStatus.CONFLICT),
 
     EMAIL_DUPLICATED("이미 사용 중인 이메일입니다.", HttpStatus.CONFLICT),
