@@ -1,5 +1,7 @@
 package com.goosebeoms.tickets.global.init;
 
+import com.goosebeoms.tickets.domain.coupon.entity.Coupon;
+import com.goosebeoms.tickets.domain.coupon.repository.CouponRepository;
 import com.goosebeoms.tickets.domain.show.entity.*;
 import com.goosebeoms.tickets.domain.show.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ public class DataInitializer implements ApplicationRunner {
     private final ShowScheduleRepository scheduleRepository;
     private final ZoneRepository zoneRepository;
     private final SeatRepository seatRepository;
+    private final CouponRepository couponRepository;
 
     @Override
     @Transactional
@@ -39,6 +42,42 @@ public class DataInitializer implements ApplicationRunner {
         createShow("손흥민 축구 아카데미", "프리미어리그 레전드 특강", "서울월드컵경기장",
                 Show.Category.SPORTS, Show.Status.UPCOMING, 30000, 80000,
                 "https://placehold.co/400x600?text=Soccer");
+
+        createCoupons();
+    }
+
+    private void createCoupons() {
+        LocalDateTime now = LocalDateTime.now();
+
+        couponRepository.save(Coupon.builder()
+                .code("WELCOME10")
+                .name("신규 가입 10% 할인")
+                .discountType(Coupon.DiscountType.PERCENTAGE)
+                .discountValue(10)
+                .maxCount(100)
+                .validFrom(now.minusDays(1))
+                .validUntil(now.plusDays(30))
+                .build());
+
+        couponRepository.save(Coupon.builder()
+                .code("EARLY5000")
+                .name("선착순 5,000원 할인")
+                .discountType(Coupon.DiscountType.FIXED)
+                .discountValue(5000)
+                .maxCount(50)
+                .validFrom(now.minusDays(1))
+                .validUntil(now.plusDays(7))
+                .build());
+
+        couponRepository.save(Coupon.builder()
+                .code("VIP20")
+                .name("VIP 20% 할인")
+                .discountType(Coupon.DiscountType.PERCENTAGE)
+                .discountValue(20)
+                .maxCount(10)
+                .validFrom(now.minusDays(1))
+                .validUntil(now.plusDays(14))
+                .build());
     }
 
     private void createShow(String title, String description, String venue,
