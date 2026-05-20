@@ -4,10 +4,13 @@ import com.goosebeoms.tickets.domain.coupon.entity.Coupon;
 import com.goosebeoms.tickets.domain.coupon.repository.CouponRepository;
 import com.goosebeoms.tickets.domain.show.entity.*;
 import com.goosebeoms.tickets.domain.show.repository.*;
+import com.goosebeoms.tickets.domain.user.entity.User;
+import com.goosebeoms.tickets.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,11 +28,15 @@ public class DataInitializer implements ApplicationRunner {
     private final ZoneRepository zoneRepository;
     private final SeatRepository seatRepository;
     private final CouponRepository couponRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
     public void run(ApplicationArguments args) {
         if (showRepository.count() > 0) return;
+
+        createUsers();
 
         createShow("레미제라블", "뮤지컬 레미제라블 내한 공연", "블루스퀘어 신한카드홀",
                 Show.Category.MUSICAL, Show.Status.ON_SALE, 80000, 170000,
@@ -44,6 +51,24 @@ public class DataInitializer implements ApplicationRunner {
                 "https://placehold.co/400x600?text=Soccer");
 
         createCoupons();
+    }
+
+    private void createUsers() {
+        userRepository.save(User.builder()
+                .email("user@test.com")
+                .password(passwordEncoder.encode("password123"))
+                .name("테스트유저")
+                .phone("010-1234-5678")
+                .role(User.Role.USER)
+                .build());
+
+        userRepository.save(User.builder()
+                .email("admin@test.com")
+                .password(passwordEncoder.encode("password123"))
+                .name("관리자")
+                .phone("010-0000-0000")
+                .role(User.Role.ADMIN)
+                .build());
     }
 
     private void createCoupons() {
