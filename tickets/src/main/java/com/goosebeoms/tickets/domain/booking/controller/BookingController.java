@@ -4,6 +4,7 @@ import com.goosebeoms.tickets.domain.booking.dto.BookingRequest;
 import com.goosebeoms.tickets.domain.booking.dto.BookingResponse;
 import com.goosebeoms.tickets.domain.booking.dto.BookingSummaryResponse;
 import com.goosebeoms.tickets.domain.booking.service.BookingService;
+import com.goosebeoms.tickets.domain.payment.dto.PaymentRequest;
 import com.goosebeoms.tickets.global.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,13 +22,22 @@ public class BookingController {
 
     private final BookingService bookingService;
 
-    @PostMapping
+    @PostMapping("/hold")
     @ResponseStatus(HttpStatus.CREATED)
-    public ApiResponse<BookingResponse> book(
+    public ApiResponse<BookingResponse> hold(
             @Valid @RequestBody BookingRequest request,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        return ApiResponse.ok(bookingService.book(userDetails.getUsername(), request));
+        return ApiResponse.ok(bookingService.hold(userDetails.getUsername(), request));
+    }
+
+    @PostMapping("/{bookingId}/pay")
+    public ApiResponse<BookingResponse> pay(
+            @PathVariable Long bookingId,
+            @Valid @RequestBody PaymentRequest request,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        return ApiResponse.ok(bookingService.pay(bookingId, userDetails.getUsername(), request));
     }
 
     @GetMapping("/me")

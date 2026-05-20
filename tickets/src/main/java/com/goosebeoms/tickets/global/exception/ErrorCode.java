@@ -20,6 +20,9 @@ public enum ErrorCode {
 
     BOOKING_NOT_FOUND("예매 내역을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     BOOKING_ALREADY_CANCELLED("이미 취소된 예매입니다.", HttpStatus.CONFLICT),
+    BOOKING_NOT_PAYABLE("결제 가능한 상태가 아닙니다.", HttpStatus.CONFLICT),
+    BOOKING_HOLD_EXPIRED("좌석 점유 시간이 만료됐습니다.", HttpStatus.CONFLICT),
+    PAYMENT_FAILED("결제에 실패했습니다.", HttpStatus.PAYMENT_REQUIRED),
 
     COUPON_NOT_FOUND("쿠폰을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     COUPON_EXHAUSTED("쿠폰이 모두 소진됐습니다.", HttpStatus.CONFLICT),
