@@ -23,7 +23,7 @@ import java.util.List;
 
 @Tag(name = "Bookings & Payment", description = "좌석 hold → 결제 prepare/confirm → 취소 흐름")
 @RestController
-@RequestMapping("/api/bookings")
+@RequestMapping("/bookings")
 @RequiredArgsConstructor
 public class BookingController {
 

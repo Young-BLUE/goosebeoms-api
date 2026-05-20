@@ -19,7 +19,7 @@ import java.util.List;
 @Tag(name = "Shows", description = "공연 목록 · 상세 · 회차")
 @SecurityRequirements
 @RestController
-@RequestMapping("/api/shows")
+@RequestMapping("/shows")
 @RequiredArgsConstructor
 public class ShowController {
 

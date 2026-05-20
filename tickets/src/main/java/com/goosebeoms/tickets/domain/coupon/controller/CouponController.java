@@ -17,7 +17,7 @@ import java.util.List;
 
 @Tag(name = "Coupons", description = "쿠폰 발급 (선착순 CAS) · 보유 쿠폰")
 @RestController
-@RequestMapping("/api/coupons")
+@RequestMapping("/coupons")
 @RequiredArgsConstructor
 public class CouponController {
 

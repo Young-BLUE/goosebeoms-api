@@ -14,7 +14,7 @@ import java.util.List;
 @Tag(name = "Schedules", description = "회차별 존 · 좌석맵")
 @SecurityRequirements
 @RestController
-@RequestMapping("/api/schedules")
+@RequestMapping("/schedules")
 @RequiredArgsConstructor
 public class ScheduleController {
 

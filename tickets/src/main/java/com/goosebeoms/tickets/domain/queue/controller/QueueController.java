@@ -19,7 +19,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Tag(name = "Queue", description = "대기열 진입 · 상태 조회 · SSE 구독")
 @RestController
-@RequestMapping("/api/queue")
+@RequestMapping("/queue")
 @RequiredArgsConstructor
 public class QueueController {
 
