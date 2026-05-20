@@ -52,4 +52,19 @@ public class UserCoupon {
         this.status = Status.USED;
         this.usedAt = LocalDateTime.now();
     }
+
+    public void restore() {
+        if (this.status != Status.USED) {
+            throw new IllegalStateException("USED 상태의 쿠폰만 복원할 수 있습니다.");
+        }
+        this.status = Status.AVAILABLE;
+        this.usedAt = null;
+    }
+
+    public boolean isUsable(LocalDateTime now) {
+        if (this.status != Status.AVAILABLE) return false;
+        LocalDateTime validUntil = this.coupon.getValidUntil();
+        LocalDateTime validFrom = this.coupon.getValidFrom();
+        return !now.isBefore(validFrom) && now.isBefore(validUntil);
+    }
 }

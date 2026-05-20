@@ -11,14 +11,12 @@ import com.goosebeoms.tickets.domain.user.repository.UserRepository;
 import com.goosebeoms.tickets.global.exception.BusinessException;
 import com.goosebeoms.tickets.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
-import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +26,6 @@ public class CouponService {
     private final CouponRepository couponRepository;
     private final UserCouponRepository userCouponRepository;
     private final UserRepository userRepository;
-    private final RedissonClient redissonClient;
 
     public List<CouponResponse> getAvailableCoupons() {
         LocalDateTime now = LocalDateTime.now();
@@ -47,43 +44,30 @@ public class CouponService {
 
     @Transactional
     public UserCouponResponse issue(Long couponId, String email) {
-        RLock lock = redissonClient.getLock("coupon:issue:" + couponId);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        Coupon coupon = couponRepository.findById(couponId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.COUPON_NOT_FOUND));
+
+        LocalDateTime now = LocalDateTime.now();
+        if (now.isBefore(coupon.getValidFrom()) || !now.isBefore(coupon.getValidUntil())) {
+            throw new BusinessException(ErrorCode.COUPON_NOT_AVAILABLE);
+        }
+
+        int updated = couponRepository.tryIncreaseIssuedCount(couponId);
+        if (updated == 0) {
+            throw new BusinessException(ErrorCode.COUPON_EXHAUSTED);
+        }
+
         try {
-            boolean acquired = lock.tryLock(5, 3, TimeUnit.SECONDS);
-            if (!acquired) {
-                throw new BusinessException(ErrorCode.COUPON_EXHAUSTED);
-            }
-
-            User user = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
-
-            if (userCouponRepository.existsByUserIdAndCouponId(user.getId(), couponId)) {
-                throw new BusinessException(ErrorCode.COUPON_ALREADY_ISSUED);
-            }
-
-            Coupon coupon = couponRepository.findById(couponId)
-                    .orElseThrow(() -> new BusinessException(ErrorCode.COUPON_NOT_FOUND));
-
-            if (!coupon.isIssuable()) {
-                throw new BusinessException(ErrorCode.COUPON_EXHAUSTED);
-            }
-
-            coupon.increaseIssuedCount();
-
-            UserCoupon userCoupon = userCouponRepository.save(UserCoupon.builder()
+            UserCoupon userCoupon = userCouponRepository.saveAndFlush(UserCoupon.builder()
                     .user(user)
                     .coupon(coupon)
                     .build());
-
             return UserCouponResponse.from(userCoupon);
-
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new BusinessException(ErrorCode.COUPON_EXHAUSTED);
-        } finally {
-            if (lock.isHeldByCurrentThread()) {
-                lock.unlock();
-            }
+        } catch (DataIntegrityViolationException e) {
+            throw new BusinessException(ErrorCode.COUPON_ALREADY_ISSUED);
         }
     }
 }
