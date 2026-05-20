@@ -1,0 +1,20 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:ticketsdb;MODE=MySQL
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+jwt:
+  secret: dev-only-jwt-secret-key-goosebeoms-tickets-32bytes-or-more!!

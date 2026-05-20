@@ -5,6 +5,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -15,11 +16,22 @@ import java.util.Date;
 @Component
 public class JwtProvider {
 
+    private static final int MIN_SECRET_BYTES = 32;
+
     @Value("${jwt.secret}")
     private String secret;
 
     @Value("${jwt.expiration}")
     private long expiration;
+
+    @PostConstruct
+    void validate() {
+        if (secret == null || secret.getBytes(StandardCharsets.UTF_8).length < MIN_SECRET_BYTES) {
+            throw new IllegalStateException(
+                    "jwt.secret must be at least " + MIN_SECRET_BYTES + " bytes (set via JWT_SECRET env)."
+            );
+        }
+    }
 
     public String generateToken(User user) {
         return Jwts.builder()

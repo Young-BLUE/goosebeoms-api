@@ -1,0 +1,28 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+jwt:
+  secret: integration-test-jwt-secret-goosebeoms-tickets-32bytes-min!!
+  expiration: 86400000
+
+app:
+  cors:
+    allowed-origins: http://localhost:3000
+  redisson:
+    enabled: false
+
+logging:
+  level:
+    root: WARN
+    org.hibernate.SQL: WARN
+    com.goosebeoms.tickets: INFO
