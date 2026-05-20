@@ -41,9 +41,11 @@ class CancelCouponRefundTest extends AbstractIntegrationTest {
         Coupon coupon = factory.newCoupon("REFUND10", 10);
 
         var issued = couponService.issue(coupon.getId(), user.getEmail());
+        String queueToken = factory.issueQueueToken(schedule.getId(), user.getId());
 
         BookingResponse held = bookingService.hold(user.getEmail(),
-                new BookingRequest(schedule.getId(), List.of(seats.get(0).getId()), issued.id()));
+                new BookingRequest(schedule.getId(), List.of(seats.get(0).getId()), issued.id()),
+                queueToken);
 
         bookingService.pay(held.id(), user.getEmail(),
                 new PaymentRequest(Payment.PaymentMethod.MOCK, PaymentRequest.MockResult.SUCCESS));

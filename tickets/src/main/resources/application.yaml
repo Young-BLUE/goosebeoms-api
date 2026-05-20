@@ -18,6 +18,11 @@ app:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
   redisson:
     enabled: ${REDISSON_ENABLED:false}
+  queue:
+    active-capacity: ${QUEUE_ACTIVE_CAPACITY:100}
+    token-ttl-seconds: ${QUEUE_TOKEN_TTL_SECONDS:600}
+    seconds-per-person: ${QUEUE_SECONDS_PER_PERSON:2}
+    promotion-interval-ms: ${QUEUE_PROMOTION_INTERVAL_MS:1000}
 
 management:
   endpoints:

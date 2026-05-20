@@ -10,9 +10,12 @@ import com.goosebeoms.tickets.domain.show.repository.SeatRepository;
 import com.goosebeoms.tickets.domain.show.repository.ShowRepository;
 import com.goosebeoms.tickets.domain.show.repository.ShowScheduleRepository;
 import com.goosebeoms.tickets.domain.show.repository.ZoneRepository;
+import com.goosebeoms.tickets.domain.queue.service.QueueService;
+import com.goosebeoms.tickets.domain.queue.service.QueueTokenService;
 import com.goosebeoms.tickets.domain.user.entity.User;
 import com.goosebeoms.tickets.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -29,6 +32,8 @@ public class TestDataFactory {
     private final ZoneRepository zoneRepository;
     private final SeatRepository seatRepository;
     private final CouponRepository couponRepository;
+    private final QueueTokenService queueTokenService;
+    private final StringRedisTemplate redisTemplate;
 
     public User newUser(String email) {
         return userRepository.save(User.builder()
@@ -86,6 +91,20 @@ public class TestDataFactory {
 
     public List<Seat> seatsOf(ShowSchedule schedule) {
         return seatRepository.findByShowScheduleId(schedule.getId());
+    }
+
+    public String issueQueueToken(Long scheduleId, Long userId) {
+        QueueTokenService.IssuedToken issued = queueTokenService.issue(scheduleId, userId);
+        redisTemplate.opsForZSet().add(
+                QueueService.activeKey(scheduleId),
+                userId.toString(),
+                issued.expiresAt()
+        );
+        return issued.tokenId();
+    }
+
+    public void flushRedis() {
+        redisTemplate.getConnectionFactory().getConnection().serverCommands().flushAll();
     }
 
     public Coupon newCoupon(String code, int maxCount) {

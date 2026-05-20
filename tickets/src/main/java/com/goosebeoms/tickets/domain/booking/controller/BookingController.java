@@ -26,9 +26,10 @@ public class BookingController {
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<BookingResponse> hold(
             @Valid @RequestBody BookingRequest request,
+            @RequestHeader(value = "X-Queue-Token", required = false) String queueToken,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        return ApiResponse.ok(bookingService.hold(userDetails.getUsername(), request));
+        return ApiResponse.ok(bookingService.hold(userDetails.getUsername(), request, queueToken));
     }
 
     @PostMapping("/{bookingId}/pay")

@@ -19,7 +19,12 @@ app:
   cors:
     allowed-origins: http://localhost:3000
   redisson:
-    enabled: false
+    enabled: true
+  queue:
+    active-capacity: 100
+    token-ttl-seconds: 600
+    seconds-per-person: 2
+    promotion-interval-ms: 1000
 
 logging:
   level:

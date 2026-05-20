@@ -40,8 +40,10 @@ class BookingExpirationTest extends AbstractIntegrationTest {
         User user = factory.newUser("expirer@test.com");
         int beforeAvailable = scheduleRepository.findById(schedule.getId()).orElseThrow().getAvailableCount();
 
+        String queueToken = factory.issueQueueToken(schedule.getId(), user.getId());
         BookingResponse held = bookingService.hold(user.getEmail(),
-                new BookingRequest(schedule.getId(), List.of(seats.get(0).getId()), null));
+                new BookingRequest(schedule.getId(), List.of(seats.get(0).getId()), null),
+                queueToken);
 
         jdbc.update("UPDATE bookings SET hold_expires_at = ? WHERE id = ?",
                 Timestamp.valueOf(LocalDateTime.now().minusHours(1)), held.id());

@@ -27,7 +27,12 @@ public enum ErrorCode {
     COUPON_NOT_FOUND("쿠폰을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     COUPON_EXHAUSTED("쿠폰이 모두 소진됐습니다.", HttpStatus.CONFLICT),
     COUPON_ALREADY_ISSUED("이미 발급받은 쿠폰입니다.", HttpStatus.CONFLICT),
-    COUPON_NOT_AVAILABLE("사용할 수 없는 쿠폰입니다.", HttpStatus.BAD_REQUEST);
+    COUPON_NOT_AVAILABLE("사용할 수 없는 쿠폰입니다.", HttpStatus.BAD_REQUEST),
+
+    QUEUE_TOKEN_REQUIRED("대기열 통과 토큰이 필요합니다.", HttpStatus.BAD_REQUEST),
+    QUEUE_TOKEN_EXPIRED("대기열 통과 토큰이 만료됐습니다.", HttpStatus.UNAUTHORIZED),
+    QUEUE_TOKEN_MISMATCH("대기열 토큰의 회차/사용자가 일치하지 않습니다.", HttpStatus.FORBIDDEN),
+    QUEUE_NOT_ACTIVE("아직 대기열 진입 차례가 아닙니다.", HttpStatus.FORBIDDEN);
 
     private final String message;
     private final HttpStatus httpStatus;

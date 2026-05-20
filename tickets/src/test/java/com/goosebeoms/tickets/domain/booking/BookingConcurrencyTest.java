@@ -39,6 +39,9 @@ class BookingConcurrencyTest extends AbstractIntegrationTest {
         List<User> users = factory.newUsers(threads, "racer");
         BookingRequest request = new BookingRequest(schedule.getId(), List.of(seatId), null);
 
+        java.util.Map<String, String> tokens = new java.util.HashMap<>();
+        for (User u : users) tokens.put(u.getEmail(), factory.issueQueueToken(schedule.getId(), u.getId()));
+
         AtomicInteger success = new AtomicInteger();
         AtomicInteger failure = new AtomicInteger();
         CountDownLatch start = new CountDownLatch(1);
@@ -47,10 +50,11 @@ class BookingConcurrencyTest extends AbstractIntegrationTest {
 
         for (int i = 0; i < threads; i++) {
             String email = users.get(i).getEmail();
+            String token = tokens.get(email);
             pool.submit(() -> {
                 try {
                     start.await();
-                    bookingService.hold(email, request);
+                    bookingService.hold(email, request, token);
                     success.incrementAndGet();
                 } catch (Exception e) {
                     failure.incrementAndGet();

@@ -12,6 +12,7 @@ import com.goosebeoms.tickets.domain.coupon.repository.UserCouponRepository;
 import com.goosebeoms.tickets.domain.payment.dto.PaymentRequest;
 import com.goosebeoms.tickets.domain.payment.entity.Payment;
 import com.goosebeoms.tickets.domain.payment.service.PaymentService;
+import com.goosebeoms.tickets.domain.queue.service.QueueTokenService;
 import com.goosebeoms.tickets.domain.show.entity.Seat;
 import com.goosebeoms.tickets.domain.show.entity.ShowSchedule;
 import com.goosebeoms.tickets.domain.show.repository.SeatRepository;
@@ -40,10 +41,13 @@ public class BookingService {
     private final UserRepository userRepository;
     private final UserCouponRepository userCouponRepository;
     private final PaymentService paymentService;
+    private final QueueTokenService queueTokenService;
 
-    public BookingResponse hold(String email, BookingRequest request) {
+    public BookingResponse hold(String email, BookingRequest request, String queueToken) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        queueTokenService.requireValid(queueToken, request.scheduleId(), user.getId());
 
         ShowSchedule schedule = scheduleRepository.findByIdWithOptimisticLock(request.scheduleId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.SCHEDULE_NOT_FOUND));
