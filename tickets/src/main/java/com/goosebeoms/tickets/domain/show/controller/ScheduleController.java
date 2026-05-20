@@ -4,11 +4,15 @@ import com.goosebeoms.tickets.domain.show.dto.SeatResponse;
 import com.goosebeoms.tickets.domain.show.dto.ZoneResponse;
 import com.goosebeoms.tickets.domain.show.service.ShowService;
 import com.goosebeoms.tickets.global.response.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Schedules", description = "회차별 존 · 좌석맵")
+@SecurityRequirements
 @RestController
 @RequestMapping("/api/schedules")
 @RequiredArgsConstructor

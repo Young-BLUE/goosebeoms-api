@@ -6,6 +6,8 @@ import com.goosebeoms.tickets.domain.show.dto.ShowScheduleResponse;
 import com.goosebeoms.tickets.domain.show.entity.Show;
 import com.goosebeoms.tickets.domain.show.service.ShowService;
 import com.goosebeoms.tickets.global.response.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Shows", description = "공연 목록 · 상세 · 회차")
+@SecurityRequirements
 @RestController
 @RequestMapping("/api/shows")
 @RequiredArgsConstructor

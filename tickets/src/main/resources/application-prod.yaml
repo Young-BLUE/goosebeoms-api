@@ -20,6 +20,12 @@ app:
   payment:
     gateway: toss
 
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false
+
 logging:
   level:
     root: INFO
