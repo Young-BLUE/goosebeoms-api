@@ -23,6 +23,14 @@ app:
     token-ttl-seconds: ${QUEUE_TOKEN_TTL_SECONDS:600}
     seconds-per-person: ${QUEUE_SECONDS_PER_PERSON:2}
     promotion-interval-ms: ${QUEUE_PROMOTION_INTERVAL_MS:1000}
+  payment:
+    gateway: ${PAYMENT_GATEWAY:mock}
+    toss:
+      client-key: ${TOSS_CLIENT_KEY:}
+      secret-key: ${TOSS_SECRET_KEY:}
+      base-url: ${TOSS_BASE_URL:https://api.tosspayments.com}
+      connect-timeout-ms: ${TOSS_CONNECT_TIMEOUT_MS:3000}
+      read-timeout-ms: ${TOSS_READ_TIMEOUT_MS:10000}
 
 management:
   endpoints:

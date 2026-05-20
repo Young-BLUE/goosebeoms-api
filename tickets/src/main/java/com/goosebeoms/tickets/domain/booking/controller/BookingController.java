@@ -4,7 +4,9 @@ import com.goosebeoms.tickets.domain.booking.dto.BookingRequest;
 import com.goosebeoms.tickets.domain.booking.dto.BookingResponse;
 import com.goosebeoms.tickets.domain.booking.dto.BookingSummaryResponse;
 import com.goosebeoms.tickets.domain.booking.service.BookingService;
-import com.goosebeoms.tickets.domain.payment.dto.PaymentRequest;
+import com.goosebeoms.tickets.domain.payment.dto.PaymentConfirmRequest;
+import com.goosebeoms.tickets.domain.payment.dto.PaymentPrepareRequest;
+import com.goosebeoms.tickets.domain.payment.dto.PaymentPrepareResponse;
 import com.goosebeoms.tickets.global.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,13 +34,22 @@ public class BookingController {
         return ApiResponse.ok(bookingService.hold(userDetails.getUsername(), request, queueToken));
     }
 
-    @PostMapping("/{bookingId}/pay")
-    public ApiResponse<BookingResponse> pay(
+    @PostMapping("/{bookingId}/payment/prepare")
+    public ApiResponse<PaymentPrepareResponse> preparePayment(
             @PathVariable Long bookingId,
-            @Valid @RequestBody PaymentRequest request,
+            @Valid @RequestBody PaymentPrepareRequest request,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        return ApiResponse.ok(bookingService.pay(bookingId, userDetails.getUsername(), request));
+        return ApiResponse.ok(bookingService.preparePayment(bookingId, userDetails.getUsername(), request));
+    }
+
+    @PostMapping("/{bookingId}/payment/confirm")
+    public ApiResponse<BookingResponse> confirmPayment(
+            @PathVariable Long bookingId,
+            @Valid @RequestBody PaymentConfirmRequest request,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        return ApiResponse.ok(bookingService.confirmPayment(bookingId, userDetails.getUsername(), request));
     }
 
     @GetMapping("/me")

@@ -9,8 +9,11 @@ import com.goosebeoms.tickets.domain.booking.repository.BookingRepository;
 import com.goosebeoms.tickets.domain.booking.repository.BookingSeatRepository;
 import com.goosebeoms.tickets.domain.coupon.entity.UserCoupon;
 import com.goosebeoms.tickets.domain.coupon.repository.UserCouponRepository;
-import com.goosebeoms.tickets.domain.payment.dto.PaymentRequest;
+import com.goosebeoms.tickets.domain.payment.dto.PaymentConfirmRequest;
+import com.goosebeoms.tickets.domain.payment.dto.PaymentPrepareRequest;
+import com.goosebeoms.tickets.domain.payment.dto.PaymentPrepareResponse;
 import com.goosebeoms.tickets.domain.payment.entity.Payment;
+import com.goosebeoms.tickets.domain.payment.repository.PaymentRepository;
 import com.goosebeoms.tickets.domain.payment.service.PaymentService;
 import com.goosebeoms.tickets.domain.queue.service.QueueTokenService;
 import com.goosebeoms.tickets.domain.show.entity.Seat;
@@ -41,6 +44,7 @@ public class BookingService {
     private final UserRepository userRepository;
     private final UserCouponRepository userCouponRepository;
     private final PaymentService paymentService;
+    private final PaymentRepository paymentRepository;
     private final QueueTokenService queueTokenService;
 
     public BookingResponse hold(String email, BookingRequest request, String queueToken) {
@@ -98,7 +102,7 @@ public class BookingService {
         return BookingResponse.from(booking, bookingSeats);
     }
 
-    public BookingResponse pay(Long bookingId, String email, PaymentRequest request) {
+    public PaymentPrepareResponse preparePayment(Long bookingId, String email, PaymentPrepareRequest request) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
@@ -115,8 +119,46 @@ public class BookingService {
             throw new BusinessException(ErrorCode.BOOKING_HOLD_EXPIRED);
         }
 
-        Payment payment = paymentService.process(booking, request);
-        if (payment.getStatus() != Payment.PaymentStatus.SUCCESS) {
+        Payment payment = paymentService.prepare(booking, request.methodOrDefault());
+        return PaymentPrepareResponse.of(payment, user.getEmail(), user.getName(), paymentService.clientKey());
+    }
+
+    public BookingResponse confirmPayment(Long bookingId, String email, PaymentConfirmRequest request) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+
+        Booking booking = bookingRepository.findByIdWithSeats(bookingId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.BOOKING_NOT_FOUND));
+
+        if (!booking.getUser().getId().equals(user.getId())) {
+            throw new BusinessException(ErrorCode.BOOKING_NOT_FOUND);
+        }
+
+        Payment payment = paymentRepository.findByBookingId(bookingId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.PAYMENT_NOT_FOUND));
+
+        if (!payment.getOrderId().equals(request.orderId())) {
+            throw new BusinessException(ErrorCode.PAYMENT_ORDER_MISMATCH);
+        }
+        if (payment.getAmount() != request.amount()) {
+            throw new BusinessException(ErrorCode.PAYMENT_AMOUNT_MISMATCH);
+        }
+
+        if (booking.getStatus() == Booking.BookingStatus.CONFIRMED
+                && payment.getStatus() == Payment.PaymentStatus.SUCCESS) {
+            return BookingResponse.from(booking, booking.getBookingSeats());
+        }
+        if (booking.getStatus() != Booking.BookingStatus.HOLD) {
+            throw new BusinessException(ErrorCode.BOOKING_NOT_PAYABLE);
+        }
+        if (booking.isHoldExpired(LocalDateTime.now())) {
+            throw new BusinessException(ErrorCode.BOOKING_HOLD_EXPIRED);
+        }
+
+        Payment confirmed = (payment.getStatus() == Payment.PaymentStatus.SUCCESS)
+                ? payment
+                : paymentService.confirm(payment, request.paymentKey(), request.amount());
+        if (confirmed.getStatus() != Payment.PaymentStatus.SUCCESS) {
             throw new BusinessException(ErrorCode.PAYMENT_FAILED);
         }
 

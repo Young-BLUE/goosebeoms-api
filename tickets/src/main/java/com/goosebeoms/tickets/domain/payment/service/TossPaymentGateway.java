@@ -1,9 +1,13 @@
 package com.goosebeoms.tickets.domain.payment.service;
 
 import com.goosebeoms.tickets.domain.booking.entity.Booking;
+import com.goosebeoms.tickets.domain.payment.client.TossApiException;
+import com.goosebeoms.tickets.domain.payment.client.TossConfirmResponse;
+import com.goosebeoms.tickets.domain.payment.client.TossPaymentClient;
 import com.goosebeoms.tickets.domain.payment.entity.Payment;
 import com.goosebeoms.tickets.domain.payment.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -13,12 +17,14 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@ConditionalOnProperty(name = "app.payment.gateway", havingValue = "mock", matchIfMissing = true)
-public class MockPaymentGateway implements PaymentService {
-
-    public static final String MOCK_FAIL_KEY = "MOCK_FAIL";
+@ConditionalOnProperty(name = "app.payment.gateway", havingValue = "toss")
+public class TossPaymentGateway implements PaymentService {
 
     private final PaymentRepository paymentRepository;
+    private final TossPaymentClient tossClient;
+
+    @Value("${app.payment.toss.client-key}")
+    private String clientKey;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -27,9 +33,9 @@ public class MockPaymentGateway implements PaymentService {
                 .filter(p -> p.getStatus() == Payment.PaymentStatus.PENDING)
                 .orElseGet(() -> paymentRepository.save(Payment.builder()
                         .booking(booking)
-                        .orderId("MOCK-" + UUID.randomUUID())
+                        .orderId("ORDER-" + booking.getId() + "-" + UUID.randomUUID())
                         .amount(booking.getFinalPrice())
-                        .method(method == null ? Payment.PaymentMethod.MOCK : method)
+                        .method(method == null ? Payment.PaymentMethod.CARD : method)
                         .build()));
     }
 
@@ -38,16 +44,17 @@ public class MockPaymentGateway implements PaymentService {
     public Payment confirm(Payment payment, String paymentKey, int amount) {
         Payment managed = paymentRepository.findById(payment.getId())
                 .orElseThrow(() -> new IllegalStateException("Payment not found: " + payment.getId()));
-        if (MOCK_FAIL_KEY.equals(paymentKey)) {
-            managed.markFailed("MOCK_FAIL", "Mock gateway forced failure");
-        } else {
-            managed.markSuccess(paymentKey);
+        try {
+            TossConfirmResponse response = tossClient.confirm(paymentKey, managed.getOrderId(), amount);
+            managed.markSuccess(response.paymentKey());
+        } catch (TossApiException e) {
+            managed.markFailed(e.getCode(), e.getMessage());
         }
         return managed;
     }
 
     @Override
     public String clientKey() {
-        return "MOCK_CLIENT_KEY";
+        return clientKey;
     }
 }

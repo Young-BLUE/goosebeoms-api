@@ -13,7 +13,10 @@ import java.time.LocalDateTime;
 @Entity
 @Table(
         name = "payments",
-        uniqueConstraints = @UniqueConstraint(name = "uk_payments_booking", columnNames = "booking_id")
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_payments_booking", columnNames = "booking_id"),
+                @UniqueConstraint(name = "uk_payments_order_id", columnNames = "order_id")
+        }
 )
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -26,6 +29,9 @@ public class Payment extends BaseTimeEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "booking_id", nullable = false)
     private Booking booking;
+
+    @Column(name = "order_id", nullable = false, length = 64)
+    private String orderId;
 
     @Column(nullable = false)
     private int amount;
@@ -40,14 +46,20 @@ public class Payment extends BaseTimeEntity {
 
     private String providerTxnId;
 
+    private String failureCode;
+
+    @Column(length = 500)
+    private String failureReason;
+
     private LocalDateTime paidAt;
 
     public enum PaymentStatus { PENDING, SUCCESS, FAILED }
     public enum PaymentMethod { CARD, BANK_TRANSFER, MOCK }
 
     @Builder
-    private Payment(Booking booking, int amount, PaymentMethod method) {
+    private Payment(Booking booking, String orderId, int amount, PaymentMethod method) {
         this.booking = booking;
+        this.orderId = orderId;
         this.amount = amount;
         this.method = method;
         this.status = PaymentStatus.PENDING;
@@ -57,10 +69,13 @@ public class Payment extends BaseTimeEntity {
         this.status = PaymentStatus.SUCCESS;
         this.providerTxnId = providerTxnId;
         this.paidAt = LocalDateTime.now();
+        this.failureCode = null;
+        this.failureReason = null;
     }
 
-    public void markFailed(String providerTxnId) {
+    public void markFailed(String failureCode, String failureReason) {
         this.status = PaymentStatus.FAILED;
-        this.providerTxnId = providerTxnId;
+        this.failureCode = failureCode;
+        this.failureReason = failureReason;
     }
 }

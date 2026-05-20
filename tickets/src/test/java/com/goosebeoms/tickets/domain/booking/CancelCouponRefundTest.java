@@ -9,7 +9,9 @@ import com.goosebeoms.tickets.domain.coupon.entity.Coupon;
 import com.goosebeoms.tickets.domain.coupon.entity.UserCoupon;
 import com.goosebeoms.tickets.domain.coupon.repository.UserCouponRepository;
 import com.goosebeoms.tickets.domain.coupon.service.CouponService;
-import com.goosebeoms.tickets.domain.payment.dto.PaymentRequest;
+import com.goosebeoms.tickets.domain.payment.dto.PaymentConfirmRequest;
+import com.goosebeoms.tickets.domain.payment.dto.PaymentPrepareRequest;
+import com.goosebeoms.tickets.domain.payment.dto.PaymentPrepareResponse;
 import com.goosebeoms.tickets.domain.payment.entity.Payment;
 import com.goosebeoms.tickets.domain.show.entity.Seat;
 import com.goosebeoms.tickets.domain.show.entity.ShowSchedule;
@@ -47,8 +49,10 @@ class CancelCouponRefundTest extends AbstractIntegrationTest {
                 new BookingRequest(schedule.getId(), List.of(seats.get(0).getId()), issued.id()),
                 queueToken);
 
-        bookingService.pay(held.id(), user.getEmail(),
-                new PaymentRequest(Payment.PaymentMethod.MOCK, PaymentRequest.MockResult.SUCCESS));
+        PaymentPrepareResponse prepared = bookingService.preparePayment(held.id(), user.getEmail(),
+                new PaymentPrepareRequest(Payment.PaymentMethod.MOCK));
+        bookingService.confirmPayment(held.id(), user.getEmail(),
+                new PaymentConfirmRequest("MOCK_OK", prepared.orderId(), prepared.amount()));
 
         assertThat(userCouponRepository.findById(issued.id()).orElseThrow().getStatus())
                 .isEqualTo(UserCoupon.Status.USED);
