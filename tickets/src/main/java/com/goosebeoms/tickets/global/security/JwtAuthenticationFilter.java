@@ -45,6 +45,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (header != null && header.startsWith("Bearer ")) {
             return header.substring(7);
         }
+        // SSE(EventSource)는 헤더 설정 불가 → 쿼리 파라미터로 폴백
+        String param = request.getParameter("token");
+        if (param != null && !param.isBlank()) {
+            return param;
+        }
         return null;
     }
 }
