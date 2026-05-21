@@ -1,6 +1,7 @@
 package com.goosebeoms.tickets.domain.user.entity;
 
 import com.goosebeoms.tickets.global.entity.BaseTimeEntity;
+import com.goosebeoms.tickets.global.enums.LabeledEnum;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -32,7 +33,14 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private Role role;
 
-    public enum Role { USER, ADMIN }
+    @Getter
+    public enum Role implements LabeledEnum {
+        USER("일반"),
+        ADMIN("관리자");
+
+        private final String label;
+        Role(String label) { this.label = label; }
+    }
 
     @Builder
     private User(String email, String password, String name, String phone, Role role) {

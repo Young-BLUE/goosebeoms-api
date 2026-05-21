@@ -6,9 +6,11 @@ public record AuthResponse(
         String token,
         String email,
         String name,
-        String role
+        String role,
+        String roleLabel
 ) {
     public static AuthResponse of(String token, User user) {
-        return new AuthResponse(token, user.getEmail(), user.getName(), user.getRole().name());
+        return new AuthResponse(token, user.getEmail(), user.getName(),
+                user.getRole().name(), user.getRole().getLabel());
     }
 }

@@ -1,6 +1,7 @@
 package com.goosebeoms.tickets.domain.show.entity;
 
 import com.goosebeoms.tickets.global.entity.BaseTimeEntity;
+import com.goosebeoms.tickets.global.enums.LabeledEnum;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -39,8 +40,27 @@ public class Show extends BaseTimeEntity {
     private int minPrice;
     private int maxPrice;
 
-    public enum Category { MUSICAL, CONCERT, SPORTS, THEATER }
-    public enum Status { UPCOMING, ON_SALE, SOLD_OUT, ENDED }
+    @Getter
+    public enum Category implements LabeledEnum {
+        MUSICAL("뮤지컬"),
+        CONCERT("콘서트"),
+        SPORTS("스포츠"),
+        THEATER("연극");
+
+        private final String label;
+        Category(String label) { this.label = label; }
+    }
+
+    @Getter
+    public enum Status implements LabeledEnum {
+        UPCOMING("예매 예정"),
+        ON_SALE("예매 중"),
+        SOLD_OUT("매진"),
+        ENDED("종료");
+
+        private final String label;
+        Status(String label) { this.label = label; }
+    }
 
     @Builder
     private Show(String title, String description, String venue, Category category,

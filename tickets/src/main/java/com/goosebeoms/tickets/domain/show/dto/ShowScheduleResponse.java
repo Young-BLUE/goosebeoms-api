@@ -9,7 +9,8 @@ public record ShowScheduleResponse(
         LocalDateTime scheduledAt,
         int totalCapacity,
         int availableCount,
-        String status
+        String status,
+        String statusLabel
 ) {
     public static ShowScheduleResponse from(ShowSchedule schedule) {
         return new ShowScheduleResponse(
@@ -17,7 +18,8 @@ public record ShowScheduleResponse(
                 schedule.getScheduledAt(),
                 schedule.getTotalCapacity(),
                 schedule.getAvailableCount(),
-                schedule.getStatus().name()
+                schedule.getStatus().name(),
+                schedule.getStatus().getLabel()
         );
     }
 }

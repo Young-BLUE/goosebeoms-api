@@ -16,6 +16,7 @@ public record BookingResponse(
         int discountPrice,
         int finalPrice,
         String status,
+        String statusLabel,
         LocalDateTime createdAt
 ) {
     public record SeatInfo(String zone, String rowLabel, int number, int price) {
@@ -40,6 +41,7 @@ public record BookingResponse(
                 booking.getDiscountPrice(),
                 booking.getFinalPrice(),
                 booking.getStatus().name(),
+                booking.getStatus().getLabel(),
                 booking.getCreatedAt()
         );
     }

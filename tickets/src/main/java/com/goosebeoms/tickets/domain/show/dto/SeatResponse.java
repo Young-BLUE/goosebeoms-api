@@ -6,14 +6,16 @@ public record SeatResponse(
         Long id,
         String rowLabel,
         int number,
-        String status
+        String status,
+        String statusLabel
 ) {
     public static SeatResponse from(Seat seat) {
         return new SeatResponse(
                 seat.getId(),
                 seat.getRowLabel(),
                 seat.getNumber(),
-                seat.getStatus().name()
+                seat.getStatus().name(),
+                seat.getStatus().getLabel()
         );
     }
 }

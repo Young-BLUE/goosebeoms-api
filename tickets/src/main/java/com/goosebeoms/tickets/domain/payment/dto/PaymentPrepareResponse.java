@@ -9,7 +9,8 @@ public record PaymentPrepareResponse(
         String customerEmail,
         String customerName,
         String clientKey,
-        Payment.PaymentMethod method
+        String method,
+        String methodLabel
 ) {
     public static PaymentPrepareResponse of(Payment payment, String customerEmail, String customerName, String clientKey) {
         return new PaymentPrepareResponse(
@@ -19,7 +20,8 @@ public record PaymentPrepareResponse(
                 customerEmail,
                 customerName,
                 clientKey,
-                payment.getMethod()
+                payment.getMethod().name(),
+                payment.getMethod().getLabel()
         );
     }
 }

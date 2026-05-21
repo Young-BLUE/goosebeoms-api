@@ -4,6 +4,7 @@ import com.goosebeoms.tickets.domain.coupon.entity.UserCoupon;
 import com.goosebeoms.tickets.domain.show.entity.ShowSchedule;
 import com.goosebeoms.tickets.domain.user.entity.User;
 import com.goosebeoms.tickets.global.entity.BaseTimeEntity;
+import com.goosebeoms.tickets.global.enums.LabeledEnum;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -54,7 +55,16 @@ public class Booking extends BaseTimeEntity {
 
     private LocalDateTime paidAt;
 
-    public enum BookingStatus { HOLD, CONFIRMED, CANCELLED, EXPIRED }
+    @Getter
+    public enum BookingStatus implements LabeledEnum {
+        HOLD("결제 대기"),
+        CONFIRMED("결제 완료"),
+        CANCELLED("취소"),
+        EXPIRED("만료");
+
+        private final String label;
+        BookingStatus(String label) { this.label = label; }
+    }
 
     @Builder
     private Booking(User user, ShowSchedule showSchedule, UserCoupon userCoupon,

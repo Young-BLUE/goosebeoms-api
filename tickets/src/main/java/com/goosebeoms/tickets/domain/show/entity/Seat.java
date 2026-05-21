@@ -1,5 +1,6 @@
 package com.goosebeoms.tickets.domain.show.entity;
 
+import com.goosebeoms.tickets.global.enums.LabeledEnum;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -30,7 +31,15 @@ public class Seat {
     @Column(nullable = false)
     private SeatStatus status;
 
-    public enum SeatStatus { AVAILABLE, TEMP_RESERVED, SOLD }
+    @Getter
+    public enum SeatStatus implements LabeledEnum {
+        AVAILABLE("예매 가능"),
+        TEMP_RESERVED("선점"),
+        SOLD("판매 완료");
+
+        private final String label;
+        SeatStatus(String label) { this.label = label; }
+    }
 
     @Builder
     private Seat(Zone zone, String rowLabel, int number) {

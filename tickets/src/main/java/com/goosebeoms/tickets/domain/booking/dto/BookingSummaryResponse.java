@@ -12,6 +12,7 @@ public record BookingSummaryResponse(
         int seatCount,
         int finalPrice,
         String status,
+        String statusLabel,
         LocalDateTime createdAt
 ) {
     public static BookingSummaryResponse from(Booking booking) {
@@ -23,6 +24,7 @@ public record BookingSummaryResponse(
                 booking.getBookingSeats().size(),
                 booking.getFinalPrice(),
                 booking.getStatus().name(),
+                booking.getStatus().getLabel(),
                 booking.getCreatedAt()
         );
     }

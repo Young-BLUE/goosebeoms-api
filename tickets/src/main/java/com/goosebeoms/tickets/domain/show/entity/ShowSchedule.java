@@ -1,6 +1,7 @@
 package com.goosebeoms.tickets.domain.show.entity;
 
 import com.goosebeoms.tickets.global.entity.BaseTimeEntity;
+import com.goosebeoms.tickets.global.enums.LabeledEnum;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -38,7 +39,15 @@ public class ShowSchedule extends BaseTimeEntity {
     @Version
     private Long version;
 
-    public enum Status { AVAILABLE, SOLD_OUT, CANCELLED }
+    @Getter
+    public enum Status implements LabeledEnum {
+        AVAILABLE("예매 가능"),
+        SOLD_OUT("매진"),
+        CANCELLED("취소");
+
+        private final String label;
+        Status(String label) { this.label = label; }
+    }
 
     @Builder
     private ShowSchedule(Show show, LocalDateTime scheduledAt, int totalCapacity) {

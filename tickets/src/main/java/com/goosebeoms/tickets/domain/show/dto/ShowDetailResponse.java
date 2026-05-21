@@ -10,8 +10,10 @@ public record ShowDetailResponse(
         String description,
         String venue,
         String category,
+        String categoryLabel,
         String posterUrl,
         String status,
+        String statusLabel,
         int minPrice,
         int maxPrice,
         List<ShowScheduleResponse> schedules
@@ -23,8 +25,10 @@ public record ShowDetailResponse(
                 show.getDescription(),
                 show.getVenue(),
                 show.getCategory().name(),
+                show.getCategory().getLabel(),
                 show.getPosterUrl(),
                 show.getStatus().name(),
+                show.getStatus().getLabel(),
                 show.getMinPrice(),
                 show.getMaxPrice(),
                 schedules

@@ -7,8 +7,10 @@ public record ShowResponse(
         String title,
         String venue,
         String category,
+        String categoryLabel,
         String posterUrl,
         String status,
+        String statusLabel,
         int minPrice,
         int maxPrice
 ) {
@@ -18,8 +20,10 @@ public record ShowResponse(
                 show.getTitle(),
                 show.getVenue(),
                 show.getCategory().name(),
+                show.getCategory().getLabel(),
                 show.getPosterUrl(),
                 show.getStatus().name(),
+                show.getStatus().getLabel(),
                 show.getMinPrice(),
                 show.getMaxPrice()
         );
