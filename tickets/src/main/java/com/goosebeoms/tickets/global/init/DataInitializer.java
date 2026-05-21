@@ -38,19 +38,98 @@ public class DataInitializer implements ApplicationRunner {
 
         createUsers();
 
-        createShow("레미제라블", "뮤지컬 레미제라블 내한 공연", "블루스퀘어 신한카드홀",
-                Show.Category.MUSICAL, Show.Status.ON_SALE, 80000, 170000,
-                "https://placehold.co/400x600?text=LesMis");
-
-        createShow("아이유 콘서트 2026", "아이유 월드투어 서울", "올림픽공원 케이스포돔",
-                Show.Category.CONCERT, Show.Status.ON_SALE, 99000, 165000,
-                "https://placehold.co/400x600?text=IU");
-
-        createShow("손흥민 축구 아카데미", "프리미어리그 레전드 특강", "서울월드컵경기장",
-                Show.Category.SPORTS, Show.Status.UPCOMING, 30000, 80000,
-                "https://placehold.co/400x600?text=Soccer");
+        createMusicals();
+        createEdmFestivals();
+        createOtherEvents();
 
         createCoupons();
+    }
+
+    private void createMusicals() {
+        createShow("레미제라블", "뮤지컬 레미제라블 내한 공연", "블루스퀘어 신한카드홀",
+                Show.Category.MUSICAL, Show.Status.ON_SALE, 80000, 170000,
+                "https://placehold.co/400x600?text=Les+Miserables");
+        createShow("위키드", "전 세계가 사랑한 마법 뮤지컬", "샤롯데씨어터",
+                Show.Category.MUSICAL, Show.Status.ON_SALE, 70000, 180000,
+                "https://placehold.co/400x600?text=Wicked");
+        createShow("오페라의 유령", "앤드루 로이드 웨버 명작 25주년 기념", "블루스퀘어 신한카드홀",
+                Show.Category.MUSICAL, Show.Status.ON_SALE, 90000, 190000,
+                "https://placehold.co/400x600?text=Phantom+of+the+Opera");
+        createShow("시카고", "재즈 시대를 배경으로 한 뮤지컬 클래식", "LG아트센터",
+                Show.Category.MUSICAL, Show.Status.ON_SALE, 60000, 150000,
+                "https://placehold.co/400x600?text=Chicago");
+        createShow("캣츠", "오리지널 내한 공연", "충무아트센터 대극장",
+                Show.Category.MUSICAL, Show.Status.UPCOMING, 60000, 140000,
+                "https://placehold.co/400x600?text=Cats");
+        createShow("맘마미아", "ABBA의 명곡과 함께하는 그리스 섬 이야기", "디큐브 링크아트센터",
+                Show.Category.MUSICAL, Show.Status.ON_SALE, 70000, 160000,
+                "https://placehold.co/400x600?text=Mamma+Mia");
+        createShow("라이언킹", "디즈니 뮤지컬 라이브", "예술의전당 오페라극장",
+                Show.Category.MUSICAL, Show.Status.ON_SALE, 80000, 180000,
+                "https://placehold.co/400x600?text=Lion+King");
+        createShow("겨울왕국", "디즈니 온 브로드웨이 첫 내한", "잠실 샤롯데씨어터",
+                Show.Category.MUSICAL, Show.Status.UPCOMING, 90000, 200000,
+                "https://placehold.co/400x600?text=Frozen");
+        createShow("해밀턴", "린마누엘 미란다 라이센스 공연", "블루스퀘어 신한카드홀",
+                Show.Category.MUSICAL, Show.Status.UPCOMING, 100000, 220000,
+                "https://placehold.co/400x600?text=Hamilton");
+        createShow("지킬 앤 하이드", "프랭크 와일드혼 명작", "강동아트센터",
+                Show.Category.MUSICAL, Show.Status.ON_SALE, 60000, 140000,
+                "https://placehold.co/400x600?text=Jekyll+and+Hyde");
+    }
+
+    private void createEdmFestivals() {
+        createShow("UMF Korea 2026", "Ultra Music Festival 한국", "잠실종합운동장",
+                Show.Category.CONCERT, Show.Status.ON_SALE, 180000, 380000,
+                "https://placehold.co/400x600?text=UMF+Korea");
+        createShow("World DJ Festival", "글로벌 DJ 라인업 24시간 논스톱", "서울랜드",
+                Show.Category.CONCERT, Show.Status.ON_SALE, 130000, 280000,
+                "https://placehold.co/400x600?text=World+DJ+Festival");
+        createShow("Spectrum Dance Music Festival", "한강 야경과 함께하는 EDM 페스티벌", "난지한강공원",
+                Show.Category.CONCERT, Show.Status.UPCOMING, 120000, 250000,
+                "https://placehold.co/400x600?text=Spectrum");
+        createShow("SuperBeat Festival", "K-pop과 EDM의 크로스오버", "인천 영종도",
+                Show.Category.CONCERT, Show.Status.ON_SALE, 140000, 290000,
+                "https://placehold.co/400x600?text=SuperBeat");
+        createShow("Coachella Korea", "코첼라 첫 한국 상륙", "송도 컨벤시아 야외 특설",
+                Show.Category.CONCERT, Show.Status.UPCOMING, 220000, 450000,
+                "https://placehold.co/400x600?text=Coachella+Korea");
+    }
+
+    private void createOtherEvents() {
+        // 콘서트
+        createShow("아이유 콘서트 2026", "아이유 월드투어 서울", "올림픽공원 KSPO돔",
+                Show.Category.CONCERT, Show.Status.ON_SALE, 99000, 165000,
+                "https://placehold.co/400x600?text=IU+Concert");
+        createShow("NewJeans World Tour", "뉴진스 첫 단독 월드투어 서울", "고척스카이돔",
+                Show.Category.CONCERT, Show.Status.ON_SALE, 120000, 220000,
+                "https://placehold.co/400x600?text=NewJeans");
+        createShow("임영웅 콘서트", "전국투어 IM HERO", "올림픽공원 KSPO돔",
+                Show.Category.CONCERT, Show.Status.ON_SALE, 100000, 180000,
+                "https://placehold.co/400x600?text=Lim+Young+Woong");
+        // 연극
+        createShow("햄릿", "셰익스피어 4대 비극", "명동예술극장",
+                Show.Category.THEATER, Show.Status.ON_SALE, 40000, 90000,
+                "https://placehold.co/400x600?text=Hamlet");
+        createShow("라이어", "코미디 연극 시즌 9", "대학로 예술극장",
+                Show.Category.THEATER, Show.Status.ON_SALE, 35000, 70000,
+                "https://placehold.co/400x600?text=Liar");
+        createShow("아가사", "추리극의 정석", "두산아트센터 연강홀",
+                Show.Category.THEATER, Show.Status.ON_SALE, 45000, 95000,
+                "https://placehold.co/400x600?text=Agatha");
+        createShow("노트르담 드 파리", "프랑스 오리지널 내한", "세종문화회관 대극장",
+                Show.Category.THEATER, Show.Status.UPCOMING, 70000, 160000,
+                "https://placehold.co/400x600?text=Notre+Dame+de+Paris");
+        // 스포츠
+        createShow("손흥민 축구 아카데미", "프리미어리그 레전드 특강", "서울월드컵경기장",
+                Show.Category.SPORTS, Show.Status.UPCOMING, 30000, 80000,
+                "https://placehold.co/400x600?text=Son+Football");
+        createShow("KBO 한국시리즈 1차전", "프로야구 가을야구의 절정", "잠실야구장",
+                Show.Category.SPORTS, Show.Status.UPCOMING, 25000, 90000,
+                "https://placehold.co/400x600?text=KBO+Korean+Series");
+        createShow("프로농구 올스타전 2026", "KBL 올스타전 + 덩크 컨테스트", "잠실실내체육관",
+                Show.Category.SPORTS, Show.Status.ON_SALE, 35000, 100000,
+                "https://placehold.co/400x600?text=KBL+Allstar");
     }
 
     private void createUsers() {
