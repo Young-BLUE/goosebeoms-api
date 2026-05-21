@@ -15,10 +15,11 @@ jwt:
 
 app:
   cors:
-    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:5174}
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
   redisson:
     enabled: ${REDISSON_ENABLED:false}
   queue:
+    enabled: ${QUEUE_ENABLED:false}
     active-capacity: ${QUEUE_ACTIVE_CAPACITY:100}
     token-ttl-seconds: ${QUEUE_TOKEN_TTL_SECONDS:600}
     seconds-per-person: ${QUEUE_SECONDS_PER_PERSON:2}
@@ -42,4 +43,4 @@ management:
       enabled: false
 
 server:
-  port: 8080
+  port: 8888

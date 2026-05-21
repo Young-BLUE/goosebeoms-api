@@ -17,10 +17,11 @@ jwt:
 
 app:
   cors:
-    allowed-origins: http://localhost:3000
+    allowed-origins: http://localhost:5173
   redisson:
     enabled: true
   queue:
+    enabled: true
     active-capacity: 100
     token-ttl-seconds: 600
     seconds-per-person: 2
@@ -31,3 +32,6 @@ logging:
     root: WARN
     org.hibernate.SQL: WARN
     com.goosebeoms.tickets: INFO
+
+server:
+  port: 8888

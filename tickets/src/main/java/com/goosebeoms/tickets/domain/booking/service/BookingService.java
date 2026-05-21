@@ -25,6 +25,7 @@ import com.goosebeoms.tickets.domain.user.repository.UserRepository;
 import com.goosebeoms.tickets.global.exception.BusinessException;
 import com.goosebeoms.tickets.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,13 +46,16 @@ public class BookingService {
     private final UserCouponRepository userCouponRepository;
     private final PaymentService paymentService;
     private final PaymentRepository paymentRepository;
-    private final QueueTokenService queueTokenService;
+    private final ObjectProvider<QueueTokenService> queueTokenServiceProvider;
 
     public BookingResponse hold(String email, BookingRequest request, String queueToken) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        queueTokenService.requireValid(queueToken, request.scheduleId(), user.getId());
+        QueueTokenService queueTokenService = queueTokenServiceProvider.getIfAvailable();
+        if (queueTokenService != null) {
+            queueTokenService.requireValid(queueToken, request.scheduleId(), user.getId());
+        }
 
         ShowSchedule schedule = scheduleRepository.findByIdWithOptimisticLock(request.scheduleId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.SCHEDULE_NOT_FOUND));

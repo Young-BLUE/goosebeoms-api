@@ -8,6 +8,7 @@ import com.goosebeoms.tickets.global.exception.BusinessException;
 import com.goosebeoms.tickets.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ import java.time.Duration;
 
 @Service
 @RequiredArgsConstructor
+@ConditionalOnProperty(name = "app.queue.enabled", havingValue = "true")
 public class QueueService {
 
     public static final String WAIT_KEY_PREFIX = "queue:wait:";

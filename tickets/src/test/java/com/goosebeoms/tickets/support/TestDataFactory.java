@@ -15,6 +15,7 @@ import com.goosebeoms.tickets.domain.queue.service.QueueTokenService;
 import com.goosebeoms.tickets.domain.user.entity.User;
 import com.goosebeoms.tickets.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@Profile("test")
 @RequiredArgsConstructor
 public class TestDataFactory {
 

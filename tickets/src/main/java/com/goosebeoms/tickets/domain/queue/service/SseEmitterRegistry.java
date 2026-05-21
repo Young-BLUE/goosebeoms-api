@@ -1,6 +1,7 @@
 package com.goosebeoms.tickets.domain.queue.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -10,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Component
+@ConditionalOnProperty(name = "app.queue.enabled", havingValue = "true")
 public class SseEmitterRegistry {
 
     private final Map<Long, Map<Long, SseEmitter>> byScheduleAndUser = new ConcurrentHashMap<>();
