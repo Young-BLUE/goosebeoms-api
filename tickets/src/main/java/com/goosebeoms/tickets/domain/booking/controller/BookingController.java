@@ -1,5 +1,6 @@
 package com.goosebeoms.tickets.domain.booking.controller;
 
+import com.goosebeoms.tickets.domain.booking.dto.BookingCancelResponse;
 import com.goosebeoms.tickets.domain.booking.dto.BookingRequest;
 import com.goosebeoms.tickets.domain.booking.dto.BookingResponse;
 import com.goosebeoms.tickets.domain.booking.dto.BookingSummaryResponse;
@@ -78,13 +79,13 @@ public class BookingController {
         return ApiResponse.ok(bookingService.getBooking(bookingId, userDetails.getUsername()));
     }
 
-    @Operation(summary = "예매 취소", description = "HOLD/CONFIRMED 상태에서만 가능. CONFIRMED 취소 시 쿠폰 자동 복원")
+    @Operation(summary = "예매 취소",
+            description = "HOLD/CONFIRMED 상태에서만 가능. CONFIRMED 취소 시 쿠폰 복원 — 유효기간 만료된 경우 복원되지 않고 응답에 안내")
     @DeleteMapping("/{bookingId}")
-    public ApiResponse<Void> cancel(
+    public ApiResponse<BookingCancelResponse> cancel(
             @PathVariable Long bookingId,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        bookingService.cancel(bookingId, userDetails.getUsername());
-        return ApiResponse.ok();
+        return ApiResponse.ok(bookingService.cancel(bookingId, userDetails.getUsername()));
     }
 }

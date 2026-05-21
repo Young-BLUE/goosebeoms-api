@@ -1,5 +1,6 @@
 package com.goosebeoms.tickets.domain.booking.service;
 
+import com.goosebeoms.tickets.domain.booking.dto.BookingCancelResponse;
 import com.goosebeoms.tickets.domain.booking.dto.BookingRequest;
 import com.goosebeoms.tickets.domain.booking.dto.BookingResponse;
 import com.goosebeoms.tickets.domain.booking.dto.BookingSummaryResponse;
@@ -200,7 +201,7 @@ public class BookingService {
         return BookingResponse.from(booking, booking.getBookingSeats());
     }
 
-    public void cancel(Long bookingId, String email) {
+    public BookingCancelResponse cancel(Long bookingId, String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
@@ -219,10 +220,18 @@ public class BookingService {
         booking.getBookingSeats().forEach(bs -> bs.getSeat().release());
         booking.getShowSchedule().increaseAvailableCount(booking.getBookingSeats().size());
 
+        BookingCancelResponse.CouponRestoreResult couponRestore = null;
         if (wasConfirmed && booking.getUserCoupon() != null) {
-            booking.getUserCoupon().restore();
+            UserCoupon userCoupon = booking.getUserCoupon();
+            if (LocalDateTime.now().isBefore(userCoupon.getCoupon().getValidUntil())) {
+                userCoupon.restore();
+                couponRestore = BookingCancelResponse.CouponRestoreResult.success();
+            } else {
+                couponRestore = BookingCancelResponse.CouponRestoreResult.expired();
+            }
         }
         booking.cancel();
+        return BookingCancelResponse.of(booking, couponRestore);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
