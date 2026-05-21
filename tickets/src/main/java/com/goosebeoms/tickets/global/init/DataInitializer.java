@@ -48,52 +48,49 @@ public class DataInitializer implements ApplicationRunner {
     private void createMusicals() {
         createShow("레미제라블", "뮤지컬 레미제라블 내한 공연", "블루스퀘어 신한카드홀",
                 Show.Category.MUSICAL, Show.Status.ON_SALE, 80000, 170000,
-                "https://placehold.co/400x600?text=Les+Miserables");
+                "https://ticketimage.interpark.com/Play/image/large/23/23012526_p.gif");
         createShow("위키드", "전 세계가 사랑한 마법 뮤지컬", "샤롯데씨어터",
                 Show.Category.MUSICAL, Show.Status.ON_SALE, 70000, 180000,
-                "https://placehold.co/400x600?text=Wicked");
+                "https://ticketimage.interpark.com/Play/image/large/25/25005777_p.gif");
         createShow("오페라의 유령", "앤드루 로이드 웨버 명작 25주년 기념", "블루스퀘어 신한카드홀",
                 Show.Category.MUSICAL, Show.Status.ON_SALE, 90000, 190000,
-                "https://placehold.co/400x600?text=Phantom+of+the+Opera");
+                "https://ticketimage.interpark.com/Play/image/large/23/23000632_p.gif");
         createShow("시카고", "재즈 시대를 배경으로 한 뮤지컬 클래식", "LG아트센터",
                 Show.Category.MUSICAL, Show.Status.ON_SALE, 60000, 150000,
-                "https://placehold.co/400x600?text=Chicago");
-        createShow("캣츠", "오리지널 내한 공연", "충무아트센터 대극장",
+                "https://ticketimage.interpark.com/Play/image/large/23/23004325_p.gif");
+        createShow("베토벤", "최고의 배우들이 선하나는 베토벤", "세종문화회관 대극장",
                 Show.Category.MUSICAL, Show.Status.UPCOMING, 60000, 140000,
-                "https://placehold.co/400x600?text=Cats");
+                "https://ticketimage.interpark.com/Play/image/large/26/26006232_p.gif");
         createShow("맘마미아", "ABBA의 명곡과 함께하는 그리스 섬 이야기", "디큐브 링크아트센터",
                 Show.Category.MUSICAL, Show.Status.ON_SALE, 70000, 160000,
-                "https://placehold.co/400x600?text=Mamma+Mia");
+                "https://ticketimage.interpark.com/Play/image/large/L0/L0000123_p.gif");
         createShow("라이언킹", "디즈니 뮤지컬 라이브", "예술의전당 오페라극장",
                 Show.Category.MUSICAL, Show.Status.ON_SALE, 80000, 180000,
-                "https://placehold.co/400x600?text=Lion+King");
+                "https://ticketimage.interpark.com/Play/image/large/21/21011619_p.gif");
         createShow("겨울왕국", "디즈니 온 브로드웨이 첫 내한", "잠실 샤롯데씨어터",
                 Show.Category.MUSICAL, Show.Status.UPCOMING, 90000, 200000,
-                "https://placehold.co/400x600?text=Frozen");
-        createShow("해밀턴", "린마누엘 미란다 라이센스 공연", "블루스퀘어 신한카드홀",
+                "https://ticketimage.interpark.com/Play/image/large/26/26007416_p.gif");
+        createShow("빌리 엘리어트", "전세계가 사랑한 명작의 귀환", "블루스퀘어 우리은행홀",
                 Show.Category.MUSICAL, Show.Status.UPCOMING, 100000, 220000,
-                "https://placehold.co/400x600?text=Hamilton");
-        createShow("지킬 앤 하이드", "프랭크 와일드혼 명작", "강동아트센터",
+                "https://ticketimage.interpark.com/Play/image/large/26/26001001_p.gif");
+        createShow("지킬 앤 하이드", "프랭크 와일드혼 명작", "블루스퀘어 신한카드홀",
                 Show.Category.MUSICAL, Show.Status.ON_SALE, 60000, 140000,
-                "https://placehold.co/400x600?text=Jekyll+and+Hyde");
+                "https://ticketimage.interpark.com/Play/image/large/24/24013928_p.gif");
     }
 
     private void createEdmFestivals() {
         createShow("UMF Korea 2026", "Ultra Music Festival 한국", "잠실종합운동장",
                 Show.Category.CONCERT, Show.Status.ON_SALE, 180000, 380000,
-                "https://placehold.co/400x600?text=UMF+Korea");
-        createShow("World DJ Festival", "글로벌 DJ 라인업 24시간 논스톱", "서울랜드",
+                "https://ticketimage.interpark.com/Play/image/large/25/25012744_p.gif");
+        createShow("World DJ Festival", "글로벌 DJ 라인업", "서울랜드",
                 Show.Category.CONCERT, Show.Status.ON_SALE, 130000, 280000,
-                "https://placehold.co/400x600?text=World+DJ+Festival");
+                "https://ticketimage.interpark.com/Play/image/large/25/25011306_p.gif");
         createShow("Spectrum Dance Music Festival", "한강 야경과 함께하는 EDM 페스티벌", "난지한강공원",
                 Show.Category.CONCERT, Show.Status.UPCOMING, 120000, 250000,
-                "https://placehold.co/400x600?text=Spectrum");
-        createShow("SuperBeat Festival", "K-pop과 EDM의 크로스오버", "인천 영종도",
+                "https://ticketimage.interpark.com/Play/image/large/16/16009350_p.gif");
+        createShow("서울 파크뮤직 페스티벌", "잔디밭에서 즐기는 음악", "올림픽공원 88잔디마당",
                 Show.Category.CONCERT, Show.Status.ON_SALE, 140000, 290000,
-                "https://placehold.co/400x600?text=SuperBeat");
-        createShow("Coachella Korea", "코첼라 첫 한국 상륙", "송도 컨벤시아 야외 특설",
-                Show.Category.CONCERT, Show.Status.UPCOMING, 220000, 450000,
-                "https://placehold.co/400x600?text=Coachella+Korea");
+                "https://ticketimage.interpark.com/Play/image/large/26/26003322_p.gif");
     }
 
     private void createOtherEvents() {
@@ -107,6 +104,9 @@ public class DataInitializer implements ApplicationRunner {
         createShow("임영웅 콘서트", "전국투어 IM HERO", "올림픽공원 KSPO돔",
                 Show.Category.CONCERT, Show.Status.ON_SALE, 100000, 180000,
                 "https://placehold.co/400x600?text=Lim+Young+Woong");
+        createShow("BTS WORLD TOUR ‘ARIRANG’ IN BUSAN", "월드스타 BTS 컴백 콘서트", "부산아시아드 주경기장",
+                Show.Category.CONCERT, Show.Status.UPCOMING, 220000, 264000,
+                "https://ticketimage.interpark.com/Play/image/large/26/26005547_p.gif");
         // 연극
         createShow("햄릿", "셰익스피어 4대 비극", "명동예술극장",
                 Show.Category.THEATER, Show.Status.ON_SALE, 40000, 90000,
