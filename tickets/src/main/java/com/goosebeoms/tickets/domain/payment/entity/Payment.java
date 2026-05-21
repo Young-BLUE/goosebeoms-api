@@ -2,7 +2,6 @@ package com.goosebeoms.tickets.domain.payment.entity;
 
 import com.goosebeoms.tickets.domain.booking.entity.Booking;
 import com.goosebeoms.tickets.global.entity.BaseTimeEntity;
-import com.goosebeoms.tickets.global.enums.LabeledEnum;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -55,7 +54,7 @@ public class Payment extends BaseTimeEntity {
     private LocalDateTime paidAt;
 
     @Getter
-    public enum PaymentStatus implements LabeledEnum {
+    public enum PaymentStatus {
         PENDING("결제 대기"),
         SUCCESS("결제 성공"),
         FAILED("결제 실패");
@@ -65,7 +64,7 @@ public class Payment extends BaseTimeEntity {
     }
 
     @Getter
-    public enum PaymentMethod implements LabeledEnum {
+    public enum PaymentMethod {
         CARD("신용/체크카드"),
         BANK_TRANSFER("계좌이체"),
         MOCK("테스트 결제");

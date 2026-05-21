@@ -1,7 +1,6 @@
 package com.goosebeoms.tickets.domain.coupon.entity;
 
 import com.goosebeoms.tickets.global.entity.BaseTimeEntity;
-import com.goosebeoms.tickets.global.enums.LabeledEnum;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -40,7 +39,7 @@ public class Coupon extends BaseTimeEntity {
     private LocalDateTime validUntil;
 
     @Getter
-    public enum DiscountType implements LabeledEnum {
+    public enum DiscountType {
         FIXED("정액 할인"),
         PERCENTAGE("정률 할인");
 

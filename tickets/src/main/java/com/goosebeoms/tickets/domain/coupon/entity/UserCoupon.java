@@ -1,7 +1,6 @@
 package com.goosebeoms.tickets.domain.coupon.entity;
 
 import com.goosebeoms.tickets.domain.user.entity.User;
-import com.goosebeoms.tickets.global.enums.LabeledEnum;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -37,7 +36,7 @@ public class UserCoupon {
     private LocalDateTime usedAt;
 
     @Getter
-    public enum Status implements LabeledEnum {
+    public enum Status {
         AVAILABLE("사용 가능"),
         USED("사용 완료"),
         EXPIRED("만료");
