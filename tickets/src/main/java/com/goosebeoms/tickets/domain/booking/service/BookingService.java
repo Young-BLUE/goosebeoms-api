@@ -19,6 +19,7 @@ import com.goosebeoms.tickets.domain.payment.service.PaymentService;
 import com.goosebeoms.tickets.domain.queue.service.QueueTokenService;
 import com.goosebeoms.tickets.domain.show.entity.Seat;
 import com.goosebeoms.tickets.domain.show.entity.ShowSchedule;
+import com.goosebeoms.tickets.domain.show.event.SeatStatusChangedEvent;
 import com.goosebeoms.tickets.domain.show.repository.SeatRepository;
 import com.goosebeoms.tickets.domain.show.repository.ShowScheduleRepository;
 import com.goosebeoms.tickets.domain.user.entity.User;
@@ -27,11 +28,13 @@ import com.goosebeoms.tickets.global.exception.BusinessException;
 import com.goosebeoms.tickets.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 
 @Service
@@ -48,6 +51,7 @@ public class BookingService {
     private final PaymentService paymentService;
     private final PaymentRepository paymentRepository;
     private final ObjectProvider<QueueTokenService> queueTokenServiceProvider;
+    private final ApplicationEventPublisher eventPublisher;
 
     public BookingResponse hold(String email, BookingRequest request, String queueToken) {
         User user = userRepository.findByEmail(email)
@@ -73,6 +77,7 @@ public class BookingService {
         }
         seats.forEach(Seat::tempReserve);
         schedule.decreaseAvailableCount(seats.size());
+        publishSeatChanges(schedule.getId(), seats);
 
         int originalPrice = seats.stream().mapToInt(s -> s.getZone().getPrice()).sum();
         int discountPrice = 0;
@@ -168,6 +173,7 @@ public class BookingService {
         }
 
         booking.getBookingSeats().forEach(bs -> bs.getSeat().confirm());
+        publishSeatChangesFromBookingSeats(booking.getShowSchedule().getId(), booking.getBookingSeats());
         if (booking.getUserCoupon() != null) {
             booking.getUserCoupon().use();
         }
@@ -219,6 +225,7 @@ public class BookingService {
         boolean wasConfirmed = booking.getStatus() == Booking.BookingStatus.CONFIRMED;
         booking.getBookingSeats().forEach(bs -> bs.getSeat().release());
         booking.getShowSchedule().increaseAvailableCount(booking.getBookingSeats().size());
+        publishSeatChangesFromBookingSeats(booking.getShowSchedule().getId(), booking.getBookingSeats());
 
         BookingCancelResponse.CouponRestoreResult couponRestore = null;
         if (wasConfirmed && booking.getUserCoupon() != null) {
@@ -249,5 +256,18 @@ public class BookingService {
     private void releaseHold(Booking booking) {
         booking.getBookingSeats().forEach(bs -> bs.getSeat().release());
         booking.getShowSchedule().increaseAvailableCount(booking.getBookingSeats().size());
+        publishSeatChangesFromBookingSeats(booking.getShowSchedule().getId(), booking.getBookingSeats());
+    }
+
+    private void publishSeatChanges(Long scheduleId, List<Seat> seats) {
+        List<SeatStatusChangedEvent.SeatChange> changes = seats.stream()
+                .map(SeatStatusChangedEvent.SeatChange::from)
+                .toList();
+        eventPublisher.publishEvent(new SeatStatusChangedEvent(scheduleId, changes));
+    }
+
+    private void publishSeatChangesFromBookingSeats(Long scheduleId, Collection<BookingSeat> bookingSeats) {
+        List<Seat> seats = bookingSeats.stream().map(BookingSeat::getSeat).toList();
+        publishSeatChanges(scheduleId, seats);
     }
 }
