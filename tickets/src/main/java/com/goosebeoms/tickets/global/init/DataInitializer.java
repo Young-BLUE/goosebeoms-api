@@ -202,16 +202,19 @@ public class DataInitializer implements ApplicationRunner {
             ShowSchedule schedule = scheduleRepository.save(ShowSchedule.builder()
                     .show(show)
                     .scheduledAt(LocalDateTime.now().plusDays(i * 7L))
-                    .totalCapacity(200)
+                    .totalCapacity(332)
                     .build());
 
-            createZoneWithSeats(schedule, "VIP", maxPrice, 2, 10);
-            createZoneWithSeats(schedule, "R", (minPrice + maxPrice) / 2, 5, 10);
-            createZoneWithSeats(schedule, "S", minPrice, 8, 10);
+            createZoneWithSeats(schedule, "VIP", maxPrice, 3, 12);
+            createZoneWithSeats(schedule, "R", (minPrice + maxPrice) / 2, 6, 16);
+            createZoneWithSeats(schedule, "S", minPrice, 10, 20);
         }
     }
 
     private void createZoneWithSeats(ShowSchedule schedule, String zoneName, int price, int rows, int cols) {
+        if (rows > 26) {
+            throw new IllegalArgumentException("rowLabel A~Z 범위 초과: " + rows);
+        }
         Zone zone = zoneRepository.save(Zone.builder()
                 .showSchedule(schedule)
                 .name(zoneName)
@@ -220,13 +223,13 @@ public class DataInitializer implements ApplicationRunner {
                 .columnCount(cols)
                 .build());
 
-        String[] rowLabels = {"A", "B", "C", "D", "E", "F", "G", "H"};
         List<Seat> seats = new ArrayList<>();
         for (int r = 0; r < rows; r++) {
+            String rowLabel = String.valueOf((char) ('A' + r));
             for (int c = 1; c <= cols; c++) {
                 seats.add(Seat.builder()
                         .zone(zone)
-                        .rowLabel(rowLabels[r])
+                        .rowLabel(rowLabel)
                         .number(c)
                         .build());
             }
