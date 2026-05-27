@@ -7,7 +7,8 @@ public record SeatResponse(
         String rowLabel,
         int number,
         String status,
-        String statusLabel
+        String statusLabel,
+        boolean selectable
 ) {
     public static SeatResponse from(Seat seat) {
         return new SeatResponse(
@@ -15,7 +16,8 @@ public record SeatResponse(
                 seat.getRowLabel(),
                 seat.getNumber(),
                 seat.getStatus().name(),
-                seat.getStatus().getLabel()
+                seat.getStatus().getLabel(),
+                seat.getStatus() == Seat.SeatStatus.AVAILABLE
         );
     }
 }
