@@ -72,12 +72,16 @@ public class QueueService {
     }
 
     private QueueStatusResponse positionStatus(Long scheduleId, Long userId) {
-        Long rank = redis.opsForZSet().rank(waitKey(scheduleId), userId.toString());
+        String waitKey = waitKey(scheduleId);
+        Long rank = redis.opsForZSet().rank(waitKey, userId.toString());
         if (rank == null) return QueueStatusResponse.none();
+        Long total = redis.opsForZSet().zCard(waitKey);
+        long totalWaiting = total == null ? 0L : total;
         long position = rank + 1;
         long ahead = rank;
+        long behind = Math.max(0L, totalWaiting - position);
         long eta = ahead * secondsPerPerson;
-        return QueueStatusResponse.waiting(position, ahead, eta);
+        return QueueStatusResponse.waiting(position, ahead, behind, totalWaiting, eta);
     }
 
     private Long userIdOrThrow(String email) {

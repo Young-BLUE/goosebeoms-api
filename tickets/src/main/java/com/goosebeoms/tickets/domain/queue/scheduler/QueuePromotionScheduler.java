@@ -90,7 +90,10 @@ public class QueuePromotionScheduler {
 
         for (String userIdStr : promoted) {
             Long userId = parseLong(userIdStr);
-            if (userId == null) continue;
+            if (userId == null || userId < 0) {
+                redis.opsForZSet().remove(waitKey, userIdStr);
+                continue;
+            }
             QueueTokenService.IssuedToken issued = tokenService.issue(scheduleId, userId);
             redis.opsForZSet().add(activeKey, userIdStr, issued.expiresAt());
             redis.opsForZSet().remove(waitKey, userIdStr);
@@ -104,12 +107,15 @@ public class QueuePromotionScheduler {
         String waitKey = QueueService.waitKey(scheduleId);
         Set<String> top = redis.opsForZSet().range(waitKey, 0, SEND_RANK_TOP_N - 1);
         if (top == null || top.isEmpty()) return;
+        Long total = redis.opsForZSet().zCard(waitKey);
+        long totalWaiting = total == null ? 0L : total;
         long position = 1;
         for (String userIdStr : top) {
             Long userId = parseLong(userIdStr);
             if (userId == null) { position++; continue; }
+            long behind = Math.max(0L, totalWaiting - position);
             sseRegistry.send(scheduleId, userId, "rank",
-                    QueueStatusResponse.waiting(position, position - 1, (position - 1) * 2));
+                    QueueStatusResponse.waiting(position, position - 1, behind, totalWaiting, (position - 1) * 2));
             position++;
         }
     }
