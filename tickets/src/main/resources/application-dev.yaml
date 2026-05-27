@@ -18,3 +18,10 @@ spring:
 
 jwt:
   secret: dev-only-jwt-secret-key-goosebeoms-tickets-32bytes-or-more!!
+
+app:
+  payment:
+    gateway: toss
+    toss:
+      client-key: test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm
+      secret-key: test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6
