@@ -7,4 +7,5 @@ public interface PaymentService {
     Payment prepare(Booking booking, Payment.PaymentMethod method);
     Payment confirm(Payment payment, String paymentKey, int amount);
     String clientKey();
+    String variantKey();
 }

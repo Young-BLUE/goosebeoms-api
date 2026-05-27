@@ -29,6 +29,7 @@ app:
     toss:
       client-key: ${TOSS_CLIENT_KEY:}
       secret-key: ${TOSS_SECRET_KEY:}
+      variant-key: ${TOSS_VARIANT_KEY:DEFAULT}
       base-url: ${TOSS_BASE_URL:https://api.tosspayments.com}
       connect-timeout-ms: ${TOSS_CONNECT_TIMEOUT_MS:3000}
       read-timeout-ms: ${TOSS_READ_TIMEOUT_MS:10000}

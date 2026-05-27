@@ -26,6 +26,9 @@ public class TossPaymentGateway implements PaymentService {
     @Value("${app.payment.toss.client-key}")
     private String clientKey;
 
+    @Value("${app.payment.toss.variant-key:DEFAULT}")
+    private String variantKey;
+
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Payment prepare(Booking booking, Payment.PaymentMethod method) {
@@ -56,5 +59,10 @@ public class TossPaymentGateway implements PaymentService {
     @Override
     public String clientKey() {
         return clientKey;
+    }
+
+    @Override
+    public String variantKey() {
+        return variantKey;
     }
 }

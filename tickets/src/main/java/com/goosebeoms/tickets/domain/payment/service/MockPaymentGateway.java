@@ -50,4 +50,9 @@ public class MockPaymentGateway implements PaymentService {
     public String clientKey() {
         return "MOCK_CLIENT_KEY";
     }
+
+    @Override
+    public String variantKey() {
+        return "DEFAULT";
+    }
 }

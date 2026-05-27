@@ -130,7 +130,8 @@ public class BookingService {
         }
 
         Payment payment = paymentService.prepare(booking, request.methodOrDefault());
-        return PaymentPrepareResponse.of(payment, user.getEmail(), user.getName(), paymentService.clientKey());
+        return PaymentPrepareResponse.of(payment, user.getEmail(), user.getName(),
+                paymentService.clientKey(), paymentService.variantKey());
     }
 
     public BookingResponse confirmPayment(Long bookingId, String email, PaymentConfirmRequest request) {
