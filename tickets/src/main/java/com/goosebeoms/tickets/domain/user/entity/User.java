@@ -32,6 +32,9 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private Role role;
 
+    @Column(nullable = false)
+    private int tokenVersion;
+
     @Getter
     public enum Role {
         USER("일반"),
@@ -48,5 +51,11 @@ public class User extends BaseTimeEntity {
         this.name = name;
         this.phone = phone;
         this.role = role != null ? role : Role.USER;
+        this.tokenVersion = 1;
+    }
+
+    public void changePassword(String encodedNewPassword) {
+        this.password = encodedNewPassword;
+        this.tokenVersion++;
     }
 }

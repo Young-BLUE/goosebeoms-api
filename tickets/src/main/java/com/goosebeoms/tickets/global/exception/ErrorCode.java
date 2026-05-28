@@ -17,6 +17,8 @@ public enum ErrorCode {
     EMAIL_DUPLICATED("이미 사용 중인 이메일입니다.", HttpStatus.CONFLICT),
     INVALID_CREDENTIALS("이메일 또는 비밀번호가 올바르지 않습니다.", HttpStatus.UNAUTHORIZED),
     USER_NOT_FOUND("사용자를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+    INVALID_REFRESH_TOKEN("유효하지 않은 리프레시 토큰입니다.", HttpStatus.UNAUTHORIZED),
+    PASSWORD_MISMATCH("현재 비밀번호가 일치하지 않습니다.", HttpStatus.BAD_REQUEST),
 
     BOOKING_NOT_FOUND("예매 내역을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     BOOKING_ALREADY_CANCELLED("이미 취소된 예매입니다.", HttpStatus.CONFLICT),
