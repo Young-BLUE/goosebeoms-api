@@ -16,6 +16,8 @@ import com.goosebeoms.tickets.domain.payment.dto.PaymentPrepareResponse;
 import com.goosebeoms.tickets.domain.payment.entity.Payment;
 import com.goosebeoms.tickets.domain.payment.repository.PaymentRepository;
 import com.goosebeoms.tickets.domain.payment.service.PaymentService;
+import com.goosebeoms.tickets.domain.notification.entity.Notification;
+import com.goosebeoms.tickets.domain.notification.service.NotificationService;
 import com.goosebeoms.tickets.domain.queue.service.QueueTokenService;
 import com.goosebeoms.tickets.domain.show.entity.Seat;
 import com.goosebeoms.tickets.domain.show.entity.ShowSchedule;
@@ -52,6 +54,7 @@ public class BookingService {
     private final PaymentRepository paymentRepository;
     private final ObjectProvider<QueueTokenService> queueTokenServiceProvider;
     private final ApplicationEventPublisher eventPublisher;
+    private final NotificationService notificationService;
 
     public BookingResponse hold(String email, BookingRequest request, String queueToken) {
         User user = userRepository.findByEmail(email)
@@ -180,6 +183,11 @@ public class BookingService {
         }
         booking.confirm();
 
+        notificationService.create(user, Notification.Type.BOOKING_CONFIRMED,
+                "예매가 완료되었습니다",
+                "예매 #" + booking.getId() + " 결제가 완료되었습니다. 좌석을 확정했습니다.",
+                "BOOKING", booking.getId());
+
         return BookingResponse.from(booking, booking.getBookingSeats());
     }
 
@@ -239,6 +247,13 @@ public class BookingService {
             }
         }
         booking.cancel();
+
+        notificationService.create(user, Notification.Type.BOOKING_CANCELLED,
+                "예매가 취소되었습니다",
+                "예매 #" + booking.getId() + "을(를) 취소했습니다."
+                        + (couponRestore != null ? " " + couponRestore.message() : ""),
+                "BOOKING", booking.getId());
+
         return BookingCancelResponse.of(booking, couponRestore);
     }
 
@@ -252,6 +267,11 @@ public class BookingService {
         }
         releaseHold(booking);
         booking.expire();
+
+        notificationService.create(booking.getUser(), Notification.Type.BOOKING_EXPIRED,
+                "좌석 점유가 만료되었습니다",
+                "예매 #" + booking.getId() + "의 결제 시간이 지나 좌석이 해제되었습니다.",
+                "BOOKING", booking.getId());
     }
 
     private void releaseHold(Booking booking) {
