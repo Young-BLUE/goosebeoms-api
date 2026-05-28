@@ -113,32 +113,32 @@ public class DataInitializer implements ApplicationRunner {
         // 콘서트
         createShow("아이유 콘서트 2026", "아이유 월드투어 서울", "올림픽공원 KSPO돔",
                 Show.Category.CONCERT, Show.Status.ON_SALE, 99000, 165000,
-                "https://placehold.co/400x600?text=IU+Concert",
+                "https://i.namu.wiki/i/G7d2Fj4hGL3s6qHxENfuBtevu18L2CcHYEgfkkv5wNOZRofeqLerB4zXlpIF6-C5fubfc_uU_263odLj2Y-YlK3X6yNSGT8rMn54PeIQKmHY3da6upiiOumTZ1o7rpBulKow7-I4LXgrIKWlBIe48w.webp",
                 ldt("2026-05-25"), ldt("2026-07-25"));
         createShow("NewJeans World Tour", "뉴진스 첫 단독 월드투어 서울", "고척스카이돔",
                 Show.Category.CONCERT, Show.Status.ON_SALE, 120000, 220000,
-                "https://placehold.co/400x600?text=NewJeans",
+                "https://www.chosun.com/resizer/v2/G42WGNRTGM2TAMZRMVRGIMRSMQ.jpg?auth=9fe3e0b900814b56ee069c304d000f3db25e8954fece2e808794aa62d35bf838",
                 ldt("2026-05-12"), ldt("2026-08-12"));
         createShow("임영웅 콘서트", "전국투어 IM HERO", "올림픽공원 KSPO돔",
                 Show.Category.CONCERT, Show.Status.ON_SALE, 100000, 180000,
-                "https://placehold.co/400x600?text=Lim+Young+Woong",
+                "https://ticketimage.interpark.com/Play/image/large/23/23012698_p.gif",
                 ldt("2026-03-01"), ldt("2026-06-30"));
         createShow("프로농구 올스타전 2026", "KBL 올스타전 + 덩크 컨테스트", "잠실실내체육관",
                 Show.Category.SPORTS, Show.Status.ON_SALE, 35000, 100000,
-                "https://placehold.co/400x600?text=KBL+Allstar",
+                "https://i.namu.wiki/i/vz6wJ5oaRLaBH_Xh4Lz5C579su2_sNSwVZH-Ksr5EVaD0V1aJKblbi7-vv7Y28JgEYGRx7F44PsX0o7FQOhoKymNCq0ggG5UQOL51IrjKI9-wBAVwWOuiEVF5-xA2Adl5Fx8SebsJ5gsEpEl1vQsfw.webp",
                 ldt("2026-04-10"), ldt("2026-06-10"));
         // 연극
         createShow("햄릿", "셰익스피어 4대 비극", "명동예술극장",
                 Show.Category.THEATER, Show.Status.ON_SALE, 40000, 90000,
-                "https://placehold.co/400x600?text=Hamlet",
+                "https://ticketimage.interpark.com/Play/image/large/24/24005706_p.gif",
                 ldt("2026-04-28"), ldt("2026-07-28"));
         createShow("라이어", "코미디 연극 시즌 9", "대학로 예술극장",
                 Show.Category.THEATER, Show.Status.ON_SALE, 35000, 70000,
-                "https://placehold.co/400x600?text=Liar",
+                "https://ticketimage.interpark.com/Play/image/large/24/24017527_p.gif",
                 ldt("2026-05-08"), ldt("2026-08-08"));
         createShow("아가사", "추리극의 정석", "두산아트센터 연강홀",
                 Show.Category.THEATER, Show.Status.ON_SALE, 45000, 95000,
-                "https://placehold.co/400x600?text=Agatha",
+                "https://ticketimage.interpark.com/Play/image/large/23/23016151_p.gif",
                 ldt("2026-02-14"), ldt("2026-06-14"));
         // 예매 예정
         createShow("BTS WORLD TOUR ‘ARIRANG’ IN BUSAN", "월드스타 BTS 컴백 콘서트", "부산아시아드 주경기장",
@@ -147,15 +147,15 @@ public class DataInitializer implements ApplicationRunner {
                 ldt("2026-06-20"), ldt("2026-09-20"));
         createShow("노트르담 드 파리", "프랑스 오리지널 내한", "세종문화회관 대극장",
                 Show.Category.THEATER, Show.Status.UPCOMING, 70000, 160000,
-                "https://placehold.co/400x600?text=Notre+Dame+de+Paris",
+                "https://ticketimage.interpark.com/Play/image/large/25/25008192_p.gif",
                 ldt("2026-07-15"), ldt("2026-10-15"));
         createShow("손흥민 축구 아카데미", "프리미어리그 레전드 특강", "서울월드컵경기장",
                 Show.Category.SPORTS, Show.Status.UPCOMING, 30000, 80000,
-                "https://placehold.co/400x600?text=Son+Football",
+                "https://img.khan.co.kr/news/2025/08/02/news-p.v1.20250802.b7abcf00637544199b907b226b12e37c_P1.webp",
                 ldt("2026-06-01"), ldt("2026-08-31"));
         createShow("KBO 한국시리즈 1차전", "프로야구 가을야구의 절정", "잠실야구장",
                 Show.Category.SPORTS, Show.Status.UPCOMING, 25000, 90000,
-                "https://placehold.co/400x600?text=KBO+Korean+Series",
+                "https://cdn.iminju.net/news/photo/202104/71879_62035_583.jpg",
                 ldt("2026-09-01"), ldt("2026-11-01"));
     }
 
