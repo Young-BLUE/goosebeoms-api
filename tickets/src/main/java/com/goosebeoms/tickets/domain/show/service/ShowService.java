@@ -12,7 +12,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -25,18 +27,29 @@ public class ShowService {
     private final ZoneRepository zoneRepository;
     private final SeatRepository seatRepository;
 
-    public Page<ShowResponse> getShows(Show.Category category, Show.Status status, Pageable pageable) {
-        if (category != null && status != null) {
-            return showRepository.findByCategoryAndStatus(category, status, pageable).map(ShowResponse::from);
-        }
-        if (category != null) {
-            return showRepository.findByCategory(category, pageable).map(ShowResponse::from);
-        }
-        if (status != null) {
-            return showRepository.findByStatus(status, pageable).map(ShowResponse::from);
-        }
-        return showRepository.findAll(pageable).map(ShowResponse::from);
+    public Page<ShowResponse> getShows(ShowSearchCondition cond, Pageable pageable) {
+        String q = StringUtils.hasText(cond.q()) ? cond.q().trim() : null;
+        return showRepository.search(
+                q,
+                cond.category(),
+                cond.status(),
+                cond.minPrice(),
+                cond.maxPrice(),
+                cond.dateFrom(),
+                cond.dateTo(),
+                pageable
+        ).map(ShowResponse::from);
     }
+
+    public record ShowSearchCondition(
+            String q,
+            Show.Category category,
+            Show.Status status,
+            Integer minPrice,
+            Integer maxPrice,
+            LocalDateTime dateFrom,
+            LocalDateTime dateTo
+    ) {}
 
     public ShowDetailResponse getShow(Long showId) {
         Show show = showRepository.findById(showId)
