@@ -7,6 +7,7 @@ import com.goosebeoms.tickets.domain.user.entity.User;
 import com.goosebeoms.tickets.domain.user.repository.UserRepository;
 import com.goosebeoms.tickets.global.exception.BusinessException;
 import com.goosebeoms.tickets.global.exception.ErrorCode;
+import com.goosebeoms.tickets.global.ratelimit.RateLimit;
 import com.goosebeoms.tickets.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,6 +31,7 @@ public class QueueController {
     private final UserRepository userRepository;
 
     @Operation(summary = "대기열 진입", description = "ZADD NX 멱등 진입. 이미 active면 현재 토큰 반환")
+    @RateLimit(bucket = "queue-enter", limit = 10, windowSeconds = 60, keyType = RateLimit.KeyType.USER)
     @PostMapping("/{scheduleId}/enter")
     public ApiResponse<QueueStatusResponse> enter(
             @PathVariable Long scheduleId,

@@ -40,7 +40,9 @@ public enum ErrorCode {
     QUEUE_TOKEN_MISMATCH("대기열 토큰의 회차/사용자가 일치하지 않습니다.", HttpStatus.FORBIDDEN),
     QUEUE_NOT_ACTIVE("아직 대기열 진입 차례가 아닙니다.", HttpStatus.FORBIDDEN),
 
-    NOTIFICATION_NOT_FOUND("알림을 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+    NOTIFICATION_NOT_FOUND("알림을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+
+    TOO_MANY_REQUESTS("요청이 너무 많습니다. 잠시 후 다시 시도해주세요.", HttpStatus.TOO_MANY_REQUESTS);
 
     private final String message;
     private final HttpStatus httpStatus;

@@ -1,7 +1,9 @@
 package com.goosebeoms.tickets.global.exception;
 
+import com.goosebeoms.tickets.global.ratelimit.RateLimitExceededException;
 import com.goosebeoms.tickets.global.response.ApiResponse;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
@@ -32,6 +34,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleOptimisticLock(ObjectOptimisticLockingFailureException e) {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .body(ApiResponse.fail("다른 사용자가 동일한 좌석을 선택했습니다. 다시 시도해주세요."));
+    }
+
+    @ExceptionHandler(RateLimitExceededException.class)
+    public ResponseEntity<ApiResponse<Void>> handleRateLimit(RateLimitExceededException e) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .header(HttpHeaders.RETRY_AFTER, String.valueOf(e.getRetryAfterSeconds()))
+                .body(ApiResponse.fail(ErrorCode.TOO_MANY_REQUESTS.getMessage()));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

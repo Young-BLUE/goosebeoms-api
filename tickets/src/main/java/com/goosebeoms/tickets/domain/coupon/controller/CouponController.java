@@ -3,6 +3,7 @@ package com.goosebeoms.tickets.domain.coupon.controller;
 import com.goosebeoms.tickets.domain.coupon.dto.CouponResponse;
 import com.goosebeoms.tickets.domain.coupon.dto.UserCouponResponse;
 import com.goosebeoms.tickets.domain.coupon.service.CouponService;
+import com.goosebeoms.tickets.global.ratelimit.RateLimit;
 import com.goosebeoms.tickets.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
@@ -31,6 +32,7 @@ public class CouponController {
     }
 
     @Operation(summary = "쿠폰 선착순 발급", description = "DB 조건부 UPDATE(CAS)로 maxCount 초과 차단. 1인 1매")
+    @RateLimit(bucket = "coupon-issue", limit = 5, windowSeconds = 60, keyType = RateLimit.KeyType.USER)
     @PostMapping("/{couponId}/issue")
     @ResponseStatus(HttpStatus.CREATED)
     public ApiResponse<UserCouponResponse> issue(

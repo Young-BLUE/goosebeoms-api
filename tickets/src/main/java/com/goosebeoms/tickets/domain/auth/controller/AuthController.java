@@ -6,6 +6,7 @@ import com.goosebeoms.tickets.domain.auth.dto.PasswordChangeRequest;
 import com.goosebeoms.tickets.domain.auth.dto.RefreshRequest;
 import com.goosebeoms.tickets.domain.auth.dto.SignupRequest;
 import com.goosebeoms.tickets.domain.auth.service.AuthService;
+import com.goosebeoms.tickets.global.ratelimit.RateLimit;
 import com.goosebeoms.tickets.global.response.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirements;
@@ -26,6 +27,7 @@ public class AuthController {
 
     @Operation(summary = "회원가입", description = "이메일/비밀번호/이름/전화번호로 가입 후 access+refresh 즉시 발급")
     @SecurityRequirements
+    @RateLimit(bucket = "signup", limit = 5, windowSeconds = 60, keyType = RateLimit.KeyType.IP)
     @PostMapping("/signup")
     public ApiResponse<AuthResponse> signup(@Valid @RequestBody SignupRequest request) {
         return ApiResponse.ok(authService.signup(request));
@@ -33,6 +35,7 @@ public class AuthController {
 
     @Operation(summary = "로그인", description = "성공 시 accessToken(30분) + refreshToken(14일) 반환")
     @SecurityRequirements
+    @RateLimit(bucket = "login", limit = 10, windowSeconds = 60, keyType = RateLimit.KeyType.IP)
     @PostMapping("/login")
     public ApiResponse<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
         return ApiResponse.ok(authService.login(request));
