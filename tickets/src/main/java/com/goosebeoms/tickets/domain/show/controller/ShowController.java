@@ -32,7 +32,7 @@ public class ShowController {
     private final ShowService showService;
 
     @Operation(summary = "공연 목록 검색",
-            description = "정렬은 Pageable sort 파라미터로 지정 (예: ?sort=minPrice,asc / ?sort=createdAt,desc). 허용 필드: createdAt, title, minPrice, maxPrice")
+            description = "정렬은 Pageable sort 파라미터로 지정 (예: ?sort=bookingStartAt,desc). 허용 필드: bookingStartAt, bookingEndAt, title, minPrice, maxPrice")
     @GetMapping
     public ApiResponse<Page<ShowResponse>> getShows(
             @Parameter(description = "제목 키워드 (부분 일치, 대소문자 무시)")
@@ -47,7 +47,7 @@ public class ShowController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom,
             @Parameter(description = "회차 시작 시각 상한")
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTo,
-            @PageableDefault(size = 12, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(size = 12, sort = "bookingStartAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         ShowSearchCondition cond = new ShowSearchCondition(q, category, status, minPrice, maxPrice, dateFrom, dateTo);
         return ApiResponse.ok(showService.getShows(cond, pageable));

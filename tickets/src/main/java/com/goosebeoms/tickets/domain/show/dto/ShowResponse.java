@@ -2,6 +2,8 @@ package com.goosebeoms.tickets.domain.show.dto;
 
 import com.goosebeoms.tickets.domain.show.entity.Show;
 
+import java.time.LocalDateTime;
+
 public record ShowResponse(
         Long id,
         String title,
@@ -12,7 +14,9 @@ public record ShowResponse(
         String status,
         String statusLabel,
         int minPrice,
-        int maxPrice
+        int maxPrice,
+        LocalDateTime bookingStartAt,
+        LocalDateTime bookingEndAt
 ) {
     public static ShowResponse from(Show show) {
         return new ShowResponse(
@@ -25,7 +29,9 @@ public record ShowResponse(
                 show.getStatus().name(),
                 show.getStatus().getLabel(),
                 show.getMinPrice(),
-                show.getMaxPrice()
+                show.getMaxPrice(),
+                show.getBookingStartAt(),
+                show.getBookingEndAt()
         );
     }
 }

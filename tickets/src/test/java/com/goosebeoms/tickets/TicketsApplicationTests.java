@@ -1,10 +1,9 @@
 package com.goosebeoms.tickets;
 
+import com.goosebeoms.tickets.support.AbstractIntegrationTest;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class TicketsApplicationTests {
+class TicketsApplicationTests extends AbstractIntegrationTest {
 
 	@Test
 	void contextLoads() {

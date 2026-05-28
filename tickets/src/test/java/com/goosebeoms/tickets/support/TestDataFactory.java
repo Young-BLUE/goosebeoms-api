@@ -63,6 +63,8 @@ public class TestDataFactory {
                 .status(Show.Status.ON_SALE)
                 .minPrice(10000)
                 .maxPrice(20000)
+                .bookingStartAt(LocalDateTime.now().minusDays(1))
+                .bookingEndAt(LocalDateTime.now().plusDays(30))
                 .build());
 
         ShowSchedule schedule = scheduleRepository.save(ShowSchedule.builder()

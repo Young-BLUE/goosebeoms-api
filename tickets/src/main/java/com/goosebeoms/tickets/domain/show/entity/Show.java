@@ -4,6 +4,8 @@ import com.goosebeoms.tickets.global.entity.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "shows")
 @Getter
@@ -36,6 +38,12 @@ public class Show extends BaseTimeEntity {
     private int minPrice;
     private int maxPrice;
 
+    @Column(nullable = false)
+    private LocalDateTime bookingStartAt;
+
+    @Column(nullable = false)
+    private LocalDateTime bookingEndAt;
+
     @Getter
     @RequiredArgsConstructor
     public enum Category {
@@ -60,7 +68,8 @@ public class Show extends BaseTimeEntity {
 
     @Builder
     private Show(String title, String description, String venue, Category category,
-                 String posterUrl, Status status, int minPrice, int maxPrice) {
+                 String posterUrl, Status status, int minPrice, int maxPrice,
+                 LocalDateTime bookingStartAt, LocalDateTime bookingEndAt) {
         this.title = title;
         this.description = description;
         this.venue = venue;
@@ -69,6 +78,8 @@ public class Show extends BaseTimeEntity {
         this.status = status;
         this.minPrice = minPrice;
         this.maxPrice = maxPrice;
+        this.bookingStartAt = bookingStartAt;
+        this.bookingEndAt = bookingEndAt;
     }
 
     public void updateStatus(Status status) {
