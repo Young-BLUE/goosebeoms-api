@@ -226,6 +226,18 @@ public class BookingService {
         if (!booking.getUser().getId().equals(user.getId())) {
             throw new BusinessException(ErrorCode.BOOKING_NOT_FOUND);
         }
+        return cancelInternal(booking, "사용자 요청 취소", false);
+    }
+
+    public BookingCancelResponse forceCancel(Long bookingId, String adminReason) {
+        Booking booking = bookingRepository.findByIdWithSeats(bookingId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.BOOKING_NOT_FOUND));
+
+        String reason = (adminReason == null || adminReason.isBlank()) ? "관리자 강제 취소" : adminReason;
+        return cancelInternal(booking, reason, true);
+    }
+
+    private BookingCancelResponse cancelInternal(Booking booking, String reason, boolean byAdmin) {
         if (booking.getStatus() != Booking.BookingStatus.HOLD
                 && booking.getStatus() != Booking.BookingStatus.CONFIRMED) {
             throw new BusinessException(ErrorCode.BOOKING_ALREADY_CANCELLED);
@@ -236,9 +248,9 @@ public class BookingService {
         BookingCancelResponse.PaymentRefundResult refundResult =
                 BookingCancelResponse.PaymentRefundResult.notApplicable();
         if (wasConfirmed) {
-            Payment payment = paymentRepository.findByBookingId(bookingId).orElse(null);
+            Payment payment = paymentRepository.findByBookingId(booking.getId()).orElse(null);
             if (payment != null && payment.getStatus() == Payment.PaymentStatus.SUCCESS) {
-                Payment refunded = paymentService.cancel(payment, "사용자 요청 취소");
+                Payment refunded = paymentService.cancel(payment, reason);
                 refundResult = BookingCancelResponse.PaymentRefundResult.success(refunded.getRefundedAmount());
             }
         }
@@ -259,12 +271,14 @@ public class BookingService {
         }
         booking.cancel();
 
+        String title = byAdmin ? "관리자에 의해 예매가 취소되었습니다" : "예매가 취소되었습니다";
         StringBuilder msg = new StringBuilder("예매 #" + booking.getId() + "을(를) 취소했습니다.");
+        if (byAdmin) msg.append(" 사유: ").append(reason).append(".");
         if (refundResult.refunded()) msg.append(" ").append(refundResult.message());
         if (couponRestore != null) msg.append(" ").append(couponRestore.message());
 
-        notificationService.create(user, Notification.Type.BOOKING_CANCELLED,
-                "예매가 취소되었습니다",
+        notificationService.create(booking.getUser(), Notification.Type.BOOKING_CANCELLED,
+                title,
                 msg.toString(),
                 "BOOKING", booking.getId());
 

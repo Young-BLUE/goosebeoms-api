@@ -35,6 +35,8 @@ public enum ErrorCode {
     COUPON_EXHAUSTED("쿠폰이 모두 소진됐습니다.", HttpStatus.CONFLICT),
     COUPON_ALREADY_ISSUED("이미 발급받은 쿠폰입니다.", HttpStatus.CONFLICT),
     COUPON_NOT_AVAILABLE("사용할 수 없는 쿠폰입니다.", HttpStatus.BAD_REQUEST),
+    COUPON_CODE_DUPLICATED("이미 사용 중인 쿠폰 코드입니다.", HttpStatus.CONFLICT),
+    COUPON_MAX_COUNT_BELOW_ISSUED("maxCount는 이미 발급된 수량보다 작을 수 없습니다.", HttpStatus.BAD_REQUEST),
 
     QUEUE_TOKEN_REQUIRED("대기열 통과 토큰이 필요합니다.", HttpStatus.BAD_REQUEST),
     QUEUE_TOKEN_EXPIRED("대기열 통과 토큰이 만료됐습니다.", HttpStatus.UNAUTHORIZED),

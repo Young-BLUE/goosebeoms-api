@@ -77,4 +77,19 @@ public class Coupon extends BaseTimeEntity {
             case PERCENTAGE -> originalPrice * this.discountValue / 100;
         };
     }
+
+    public void updateInfo(String name, Integer maxCount, LocalDateTime validUntil) {
+        if (name != null) this.name = name;
+        if (maxCount != null) {
+            if (maxCount < this.issuedCount) {
+                throw new IllegalArgumentException("maxCount는 이미 발급된 수량보다 작을 수 없습니다.");
+            }
+            this.maxCount = maxCount;
+        }
+        if (validUntil != null) this.validUntil = validUntil;
+    }
+
+    public void expireNow() {
+        this.validUntil = LocalDateTime.now();
+    }
 }

@@ -85,4 +85,18 @@ public class Show extends BaseTimeEntity {
     public void updateStatus(Status status) {
         this.status = status;
     }
+
+    public void update(String title, String description, String venue, Category category,
+                       String posterUrl, Integer minPrice, Integer maxPrice,
+                       LocalDateTime bookingStartAt, LocalDateTime bookingEndAt) {
+        if (title != null) this.title = title;
+        if (description != null) this.description = description;
+        if (venue != null) this.venue = venue;
+        if (category != null) this.category = category;
+        if (posterUrl != null) this.posterUrl = posterUrl;
+        if (minPrice != null) this.minPrice = minPrice;
+        if (maxPrice != null) this.maxPrice = maxPrice;
+        if (bookingStartAt != null) this.bookingStartAt = bookingStartAt;
+        if (bookingEndAt != null) this.bookingEndAt = bookingEndAt;
+    }
 }

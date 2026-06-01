@@ -1,6 +1,8 @@
 package com.goosebeoms.tickets.domain.booking.repository;
 
 import com.goosebeoms.tickets.domain.booking.entity.Booking;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,4 +19,21 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("SELECT b.id FROM Booking b WHERE b.status = 'HOLD' AND b.holdExpiresAt < :now")
     List<Long> findExpiredHoldIds(@Param("now") LocalDateTime now);
+
+    @Query("""
+            SELECT b FROM Booking b
+            WHERE (:userId IS NULL OR b.user.id = :userId)
+              AND (:scheduleId IS NULL OR b.showSchedule.id = :scheduleId)
+              AND (:status IS NULL OR b.status = :status)
+              AND (:from IS NULL OR b.createdAt >= :from)
+              AND (:to IS NULL OR b.createdAt <= :to)
+            """)
+    Page<Booking> searchForAdmin(
+            @Param("userId") Long userId,
+            @Param("scheduleId") Long scheduleId,
+            @Param("status") Booking.BookingStatus status,
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to,
+            Pageable pageable
+    );
 }
