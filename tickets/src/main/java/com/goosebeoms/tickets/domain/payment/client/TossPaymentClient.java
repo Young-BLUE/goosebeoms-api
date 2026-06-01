@@ -37,6 +37,22 @@ public class TossPaymentClient {
                 .body(TossConfirmResponse.class);
     }
 
+    public TossCancelResponse cancel(String paymentKey, String reason) {
+        TossCancelRequest body = new TossCancelRequest(reason);
+        return tossRestClient.post()
+                .uri("/v1/payments/{paymentKey}/cancel", paymentKey)
+                .body(body)
+                .retrieve()
+                .onStatus(HttpStatusCode::isError, (request, response) -> {
+                    String raw = StreamUtils.copyToString(response.getBody(), StandardCharsets.UTF_8);
+                    TossErrorResponse err = parseError(raw);
+                    log.warn("Toss cancel failed: paymentKey={} status={} code={} message={}",
+                            paymentKey, response.getStatusCode(), err.code(), err.message());
+                    throw new TossApiException(err.code(), err.message());
+                })
+                .body(TossCancelResponse.class);
+    }
+
     private TossErrorResponse parseError(String raw) {
         try {
             return MAPPER.readValue(raw, TossErrorResponse.class);

@@ -29,6 +29,7 @@ public enum ErrorCode {
     PAYMENT_NOT_FOUND("결제 정보를 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     PAYMENT_ORDER_MISMATCH("주문번호가 일치하지 않습니다.", HttpStatus.BAD_REQUEST),
     PAYMENT_AMOUNT_MISMATCH("결제 금액이 일치하지 않습니다.", HttpStatus.BAD_REQUEST),
+    PAYMENT_CANCEL_FAILED("결제 환불에 실패했습니다. 잠시 후 다시 시도해주세요.", HttpStatus.BAD_GATEWAY),
 
     COUPON_NOT_FOUND("쿠폰을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
     COUPON_EXHAUSTED("쿠폰이 모두 소진됐습니다.", HttpStatus.CONFLICT),

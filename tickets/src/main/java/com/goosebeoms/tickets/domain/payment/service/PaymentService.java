@@ -6,6 +6,7 @@ import com.goosebeoms.tickets.domain.payment.entity.Payment;
 public interface PaymentService {
     Payment prepare(Booking booking, Payment.PaymentMethod method);
     Payment confirm(Payment payment, String paymentKey, int amount);
+    Payment cancel(Payment payment, String reason);
     String clientKey();
     String variantKey();
 }

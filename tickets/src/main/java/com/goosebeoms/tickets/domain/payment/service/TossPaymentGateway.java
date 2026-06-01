@@ -2,8 +2,11 @@ package com.goosebeoms.tickets.domain.payment.service;
 
 import com.goosebeoms.tickets.domain.booking.entity.Booking;
 import com.goosebeoms.tickets.domain.payment.client.TossApiException;
+import com.goosebeoms.tickets.domain.payment.client.TossCancelResponse;
 import com.goosebeoms.tickets.domain.payment.client.TossConfirmResponse;
 import com.goosebeoms.tickets.domain.payment.client.TossPaymentClient;
+import com.goosebeoms.tickets.global.exception.BusinessException;
+import com.goosebeoms.tickets.global.exception.ErrorCode;
 import com.goosebeoms.tickets.domain.payment.entity.Payment;
 import com.goosebeoms.tickets.domain.payment.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
@@ -54,6 +57,28 @@ public class TossPaymentGateway implements PaymentService {
             managed.markFailed(e.getCode(), e.getMessage());
         }
         return managed;
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Payment cancel(Payment payment, String reason) {
+        Payment managed = paymentRepository.findById(payment.getId())
+                .orElseThrow(() -> new IllegalStateException("Payment not found: " + payment.getId()));
+        if (managed.getStatus() == Payment.PaymentStatus.REFUNDED) {
+            return managed;
+        }
+        if (managed.getProviderTxnId() == null) {
+            throw new BusinessException(ErrorCode.PAYMENT_CANCEL_FAILED);
+        }
+        try {
+            TossCancelResponse response = tossClient.cancel(managed.getProviderTxnId(), reason);
+            int totalCancelled = response.cancels() == null ? managed.getAmount()
+                    : response.cancels().stream().mapToInt(TossCancelResponse.Cancel::cancelAmount).sum();
+            managed.markRefunded(reason, totalCancelled);
+            return managed;
+        } catch (TossApiException e) {
+            throw new BusinessException(ErrorCode.PAYMENT_CANCEL_FAILED);
+        }
     }
 
     @Override

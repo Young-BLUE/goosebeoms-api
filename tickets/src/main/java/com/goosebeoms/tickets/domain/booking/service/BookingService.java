@@ -232,6 +232,17 @@ public class BookingService {
         }
 
         boolean wasConfirmed = booking.getStatus() == Booking.BookingStatus.CONFIRMED;
+
+        BookingCancelResponse.PaymentRefundResult refundResult =
+                BookingCancelResponse.PaymentRefundResult.notApplicable();
+        if (wasConfirmed) {
+            Payment payment = paymentRepository.findByBookingId(bookingId).orElse(null);
+            if (payment != null && payment.getStatus() == Payment.PaymentStatus.SUCCESS) {
+                Payment refunded = paymentService.cancel(payment, "사용자 요청 취소");
+                refundResult = BookingCancelResponse.PaymentRefundResult.success(refunded.getRefundedAmount());
+            }
+        }
+
         booking.getBookingSeats().forEach(bs -> bs.getSeat().release());
         booking.getShowSchedule().increaseAvailableCount(booking.getBookingSeats().size());
         publishSeatChangesFromBookingSeats(booking.getShowSchedule().getId(), booking.getBookingSeats());
@@ -248,13 +259,16 @@ public class BookingService {
         }
         booking.cancel();
 
+        StringBuilder msg = new StringBuilder("예매 #" + booking.getId() + "을(를) 취소했습니다.");
+        if (refundResult.refunded()) msg.append(" ").append(refundResult.message());
+        if (couponRestore != null) msg.append(" ").append(couponRestore.message());
+
         notificationService.create(user, Notification.Type.BOOKING_CANCELLED,
                 "예매가 취소되었습니다",
-                "예매 #" + booking.getId() + "을(를) 취소했습니다."
-                        + (couponRestore != null ? " " + couponRestore.message() : ""),
+                msg.toString(),
                 "BOOKING", booking.getId());
 
-        return BookingCancelResponse.of(booking, couponRestore);
+        return BookingCancelResponse.of(booking, couponRestore, refundResult);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)

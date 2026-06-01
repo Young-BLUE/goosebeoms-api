@@ -47,6 +47,15 @@ public class MockPaymentGateway implements PaymentService {
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public Payment cancel(Payment payment, String reason) {
+        Payment managed = paymentRepository.findById(payment.getId())
+                .orElseThrow(() -> new IllegalStateException("Payment not found: " + payment.getId()));
+        managed.markRefunded(reason, managed.getAmount());
+        return managed;
+    }
+
+    @Override
     public String clientKey() {
         return "MOCK_CLIENT_KEY";
     }

@@ -53,11 +53,19 @@ public class Payment extends BaseTimeEntity {
 
     private LocalDateTime paidAt;
 
+    private int refundedAmount;
+
+    @Column(length = 200)
+    private String cancelReason;
+
+    private LocalDateTime cancelledAt;
+
     @Getter
     public enum PaymentStatus {
         PENDING("결제 대기"),
         SUCCESS("결제 성공"),
-        FAILED("결제 실패");
+        FAILED("결제 실패"),
+        REFUNDED("환불 완료");
 
         private final String label;
         PaymentStatus(String label) { this.label = label; }
@@ -94,5 +102,15 @@ public class Payment extends BaseTimeEntity {
         this.status = PaymentStatus.FAILED;
         this.failureCode = failureCode;
         this.failureReason = failureReason;
+    }
+
+    public void markRefunded(String reason, int refundedAmount) {
+        if (this.status != PaymentStatus.SUCCESS) {
+            throw new IllegalStateException("SUCCESS 상태의 결제만 환불할 수 있습니다.");
+        }
+        this.status = PaymentStatus.REFUNDED;
+        this.cancelReason = reason;
+        this.cancelledAt = LocalDateTime.now();
+        this.refundedAmount = refundedAmount;
     }
 }
