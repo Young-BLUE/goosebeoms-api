@@ -11,6 +11,9 @@ import java.time.LocalDateTime;
 
 public interface ShowRepository extends JpaRepository<Show, Long> {
 
+    long countByStatus(Show.Status status);
+
+
     @Query(value = """
             SELECT DISTINCT s FROM Show s
             WHERE (:q IS NULL OR LOWER(s.title) LIKE LOWER(CONCAT('%', :q, '%')))

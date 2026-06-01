@@ -18,4 +18,6 @@ public interface CouponRepository extends JpaRepository<Coupon, Long> {
     @Query("UPDATE Coupon c SET c.issuedCount = c.issuedCount + 1 " +
             "WHERE c.id = :id AND c.issuedCount < c.maxCount")
     int tryIncreaseIssuedCount(@Param("id") Long id);
+
+    long countByValidUntilAfter(LocalDateTime now);
 }
