@@ -9,6 +9,8 @@ import com.goosebeoms.tickets.global.exception.BusinessException;
 import com.goosebeoms.tickets.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,6 +47,18 @@ public class AdminCouponService {
             throw new BusinessException(ErrorCode.COUPON_MAX_COUNT_BELOW_ISSUED);
         }
         return CouponResponse.from(coupon);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<CouponResponse> list(Pageable pageable) {
+        return couponRepository.findAll(pageable).map(CouponResponse::from);
+    }
+
+    @Transactional(readOnly = true)
+    public CouponResponse get(Long couponId) {
+        return couponRepository.findById(couponId)
+                .map(CouponResponse::from)
+                .orElseThrow(() -> new BusinessException(ErrorCode.COUPON_NOT_FOUND));
     }
 
     public CouponResponse expire(Long couponId) {

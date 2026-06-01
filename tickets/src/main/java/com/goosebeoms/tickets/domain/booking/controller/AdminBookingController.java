@@ -1,6 +1,7 @@
 package com.goosebeoms.tickets.domain.booking.controller;
 
 import com.goosebeoms.tickets.domain.booking.dto.AdminBookingCancelRequest;
+import com.goosebeoms.tickets.domain.booking.dto.AdminBookingDetailResponse;
 import com.goosebeoms.tickets.domain.booking.dto.AdminBookingResponse;
 import com.goosebeoms.tickets.domain.booking.dto.BookingCancelResponse;
 import com.goosebeoms.tickets.domain.booking.entity.Booking;
@@ -44,6 +45,12 @@ public class AdminBookingController {
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         return ApiResponse.ok(adminBookingService.search(userId, scheduleId, status, from, to, pageable));
+    }
+
+    @Operation(summary = "예매 단건 상세", description = "좌석 목록 + 결제/환불 정보 포함")
+    @GetMapping("/{bookingId}")
+    public ApiResponse<AdminBookingDetailResponse> get(@PathVariable Long bookingId) {
+        return ApiResponse.ok(adminBookingService.get(bookingId));
     }
 
     @Operation(summary = "강제 취소", description = "관리자 사유와 함께 강제 취소. 사용자에게 알림 + 환불 + 쿠폰 복원 동일 흐름.")
