@@ -73,4 +73,8 @@ public class ShowSchedule extends BaseTimeEntity {
             this.status = Status.AVAILABLE;
         }
     }
+
+    public void changeScheduledAt(LocalDateTime scheduledAt) {
+        this.scheduledAt = scheduledAt;
+    }
 }

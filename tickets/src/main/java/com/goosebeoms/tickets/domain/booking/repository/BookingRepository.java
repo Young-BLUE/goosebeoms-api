@@ -20,6 +20,17 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("SELECT b.id FROM Booking b WHERE b.status = 'HOLD' AND b.holdExpiresAt < :now")
     List<Long> findExpiredHoldIds(@Param("now") LocalDateTime now);
 
+    long countByShowScheduleId(Long scheduleId);
+
+    long countByCreatedAtBetween(LocalDateTime from, LocalDateTime to);
+
+    @Query("SELECT COALESCE(SUM(b.finalPrice), 0) FROM Booking b WHERE b.status = 'CONFIRMED'")
+    long sumConfirmedRevenue();
+
+    @Query("SELECT COALESCE(SUM(b.finalPrice), 0) FROM Booking b " +
+            "WHERE b.status = 'CONFIRMED' AND b.paidAt BETWEEN :from AND :to")
+    long sumConfirmedRevenueBetween(@Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
+
     @Query("""
             SELECT b FROM Booking b
             WHERE (:userId IS NULL OR b.user.id = :userId)
