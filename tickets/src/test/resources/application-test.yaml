@@ -25,7 +25,9 @@ app:
     active-capacity: 100
     token-ttl-seconds: 600
     seconds-per-person: 2
-    promotion-interval-ms: 1000
+    # 자동 promotion이 wait ZSET을 비워서 동시성 테스트가 깨지지 않도록 사실상 비활성화.
+    # promotion 동작을 검증하는 테스트(QueuePromotionOrderTest)는 scheduler.runOnce()를 수동 호출한다.
+    promotion-interval-ms: 86400000
 
 logging:
   level:
