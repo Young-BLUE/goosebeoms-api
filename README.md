@@ -1,5 +1,7 @@
 # goosebeoms-tickets
 
+[![CI](https://github.com/Young-BLUE/goosebeoms-api/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Young-BLUE/goosebeoms-api/actions/workflows/ci.yml)
+
 공연 티켓 예매 백엔드 API
 
 좌석 더블 부킹, 쿠폰 선착순, 대기열, 결제 정합성처럼 티켓팅 도메인에서 자주 마주치는 내용들을 다뤘습니다.
@@ -111,7 +113,7 @@ erDiagram
 
     PAYMENT {
         Long id PK
-        Long booking_id FK_UK "Booking 1:1"
+        Long booking_id FK "Booking 1:1 (unique)"
         String orderId UK "Toss orderId"
         int amount
         PaymentStatus status "PENDING/SUCCESS/FAILED/REFUNDED"
