@@ -63,6 +63,10 @@ class CouponConcurrencyTest extends AbstractIntegrationTest {
         assertThat(success.get()).isEqualTo(maxCount);
         assertThat(failure.get()).isEqualTo(requesters - maxCount);
         assertThat(reloaded.getIssuedCount()).isEqualTo(maxCount);
-        assertThat(userCouponRepository.findAll()).hasSize(maxCount);
+
+        long issuedForThisCoupon = userCouponRepository.findAll().stream()
+                .filter(uc -> uc.getCoupon().getId().equals(coupon.getId()))
+                .count();
+        assertThat(issuedForThisCoupon).isEqualTo(maxCount);
     }
 }

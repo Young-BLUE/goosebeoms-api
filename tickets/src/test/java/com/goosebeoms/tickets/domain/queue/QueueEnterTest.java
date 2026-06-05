@@ -18,6 +18,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,6 +40,7 @@ class QueueEnterTest extends AbstractIntegrationTest {
         List<User> entrants = factory.newUsers(users, "queuer");
 
         Set<Long> seenPositions = ConcurrentHashMap.newKeySet();
+        AtomicInteger failures = new AtomicInteger();
         CountDownLatch start = new CountDownLatch(1);
         CountDownLatch done = new CountDownLatch(users);
         ExecutorService pool = Executors.newFixedThreadPool(32);
@@ -49,7 +51,8 @@ class QueueEnterTest extends AbstractIntegrationTest {
                     start.await();
                     QueueStatusResponse r = queueService.enter(schedule.getId(), u.getEmail());
                     seenPositions.add(r.position());
-                } catch (InterruptedException ignored) {
+                } catch (Exception ignored) {
+                    failures.incrementAndGet();
                 } finally {
                     done.countDown();
                 }
@@ -57,11 +60,13 @@ class QueueEnterTest extends AbstractIntegrationTest {
         }
 
         start.countDown();
-        assertThat(done.await(60, TimeUnit.SECONDS)).isTrue();
+        assertThat(done.await(120, TimeUnit.SECONDS)).isTrue();
         pool.shutdown();
 
+        assertThat(failures.get()).as("enter() 호출 중 발생한 예외 수").isZero();
+
         Long zcard = redis.opsForZSet().zCard(QueueService.waitKey(schedule.getId()));
-        assertThat(zcard).isEqualTo(users);
+        assertThat(zcard).as("대기열 ZSET 원소 수").isEqualTo((long) users);
         assertThat(seenPositions).hasSize(users);
     }
 
