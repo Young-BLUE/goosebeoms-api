@@ -25,21 +25,21 @@
 
 ```mermaid
 erDiagram
-    USER ||--o{ BOOKING : "예매한다"
-    USER ||--o{ USER_COUPON : "보유한다"
-    USER ||--o{ NOTIFICATION : "수신한다"
+    USER ||--o{ BOOKING : "예매"
+    USER ||--o{ USER_COUPON : "보유"
+    USER ||--o{ NOTIFICATION : "수신"
 
-    SHOW ||--o{ SHOW_SCHEDULE : "회차를 가진다"
-    SHOW_SCHEDULE ||--o{ ZONE : "구역으로 나뉜다"
-    SHOW_SCHEDULE ||--o{ BOOKING : "예매된다"
-    ZONE ||--o{ SEAT : "좌석을 가진다"
+    SHOW ||--o{ SHOW_SCHEDULE : "회차"
+    SHOW_SCHEDULE ||--o{ ZONE : "구역"
+    SHOW_SCHEDULE ||--o{ BOOKING : "예매"
+    ZONE ||--o{ SEAT : "좌석"
 
-    BOOKING ||--o{ BOOKING_SEAT : "포함한다"
-    SEAT ||--o{ BOOKING_SEAT : "예약된다"
-    BOOKING ||--o| PAYMENT : "결제된다"
+    BOOKING ||--o{ BOOKING_SEAT : "포함"
+    SEAT ||--o{ BOOKING_SEAT : "예약"
+    BOOKING ||--o| PAYMENT : "결제"
     BOOKING }o--o| USER_COUPON : "할인 적용"
 
-    COUPON ||--o{ USER_COUPON : "발급된다"
+    COUPON ||--o{ USER_COUPON : "발급"
 
     USER {
         Long id PK
