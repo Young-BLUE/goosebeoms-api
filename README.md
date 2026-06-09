@@ -159,8 +159,8 @@ erDiagram
 
 동시성 제어 포인트:
 
-- `SEAT.status` 상태 전이로 좌석 단위 더블 부킹을 막고, `SHOW_SCHEDULE.version`(낙관적 락)으로 회차 잔여 좌석 집계 충돌을 막는 이중 구조
-- `COUPON.issuedCount` 는 Redisson 분산락 안에서 CAS로 증가
+- 좌석은 `SELECT FOR UPDATE` 비관적 락으로 multi-row 일관성을 보장하고, `SHOW_SCHEDULE.version` 낙관적 락으로 회차 잔여 좌석 집계 충돌을 막는 2계층 구조
+- `COUPON.issuedCount` 는 CAS UPDATE (`WHERE issuedCount < maxCount`) 로 한도 초과를 차단. `user_coupons(user_id, coupon_id)` UNIQUE 제약으로 중복 발급 방어
 - 예매 취소 시 쿠폰은 `USED → AVAILABLE` 복원. 단, 유효기간 지난 쿠폰은 복원하지 않음
 - `USER.tokenVersion` 은 비밀번호 변경 / 로그아웃 시 증가시켜 기존 JWT를 무효화
 
