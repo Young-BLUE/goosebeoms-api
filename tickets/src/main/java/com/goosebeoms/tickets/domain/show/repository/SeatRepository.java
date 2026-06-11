@@ -20,4 +20,12 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
 
     @Query("SELECT s FROM Seat s WHERE s.zone.showSchedule.id = :scheduleId")
     List<Seat> findByShowScheduleId(@Param("scheduleId") Long scheduleId);
+
+    @Query("""
+            SELECT s.zone.id, COUNT(s)
+            FROM Seat s
+            WHERE s.zone.id IN :zoneIds AND s.status = com.goosebeoms.tickets.domain.show.entity.Seat.SeatStatus.AVAILABLE
+            GROUP BY s.zone.id
+            """)
+    List<Object[]> countAvailableByZoneIds(@Param("zoneIds") List<Long> zoneIds);
 }

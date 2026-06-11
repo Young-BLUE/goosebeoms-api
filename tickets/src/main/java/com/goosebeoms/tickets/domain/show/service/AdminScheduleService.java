@@ -21,7 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -117,13 +119,15 @@ public class AdminScheduleService {
 
     private AdminScheduleResponse loadResponse(ShowSchedule schedule) {
         List<Zone> zones = zoneRepository.findByShowScheduleId(schedule.getId());
-        List<Long> availableCounts = new ArrayList<>(zones.size());
-        for (Zone zone : zones) {
-            long available = seatRepository.findByZoneId(zone.getId()).stream()
-                    .filter(s -> s.getStatus() == Seat.SeatStatus.AVAILABLE)
-                    .count();
-            availableCounts.add(available);
+        if (zones.isEmpty()) {
+            return AdminScheduleResponse.from(schedule, zones, List.of());
         }
+        List<Long> zoneIds = zones.stream().map(Zone::getId).toList();
+        Map<Long, Long> availableByZone = seatRepository.countAvailableByZoneIds(zoneIds).stream()
+                .collect(Collectors.toMap(row -> (Long) row[0], row -> (Long) row[1]));
+        List<Long> availableCounts = zones.stream()
+                .map(z -> availableByZone.getOrDefault(z.getId(), 0L))
+                .toList();
         return AdminScheduleResponse.from(schedule, zones, availableCounts);
     }
 

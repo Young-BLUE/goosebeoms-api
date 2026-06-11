@@ -16,6 +16,8 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -77,17 +79,14 @@ public class ShowService {
         }
 
         List<Zone> zones = zoneRepository.findByShowScheduleId(scheduleId);
+        if (zones.isEmpty()) return List.of();
+
         List<Long> zoneIds = zones.stream().map(Zone::getId).toList();
-        List<Seat> seats = seatRepository.findByZoneIdIn(zoneIds);
+        Map<Long, Long> availableByZone = seatRepository.countAvailableByZoneIds(zoneIds).stream()
+                .collect(Collectors.toMap(row -> (Long) row[0], row -> (Long) row[1]));
 
         return zones.stream()
-                .map(zone -> {
-                    long available = seats.stream()
-                            .filter(s -> s.getZone().getId().equals(zone.getId()))
-                            .filter(s -> s.getStatus() == Seat.SeatStatus.AVAILABLE)
-                            .count();
-                    return ZoneResponse.from(zone, available);
-                })
+                .map(zone -> ZoneResponse.from(zone, availableByZone.getOrDefault(zone.getId(), 0L)))
                 .toList();
     }
 

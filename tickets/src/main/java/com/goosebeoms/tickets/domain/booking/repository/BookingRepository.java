@@ -12,9 +12,26 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
-    List<Booking> findByUserIdOrderByCreatedAtDesc(Long userId);
 
-    @Query("SELECT b FROM Booking b JOIN FETCH b.bookingSeats bs JOIN FETCH bs.seat WHERE b.id = :id")
+    @Query("""
+            SELECT DISTINCT b FROM Booking b
+            JOIN FETCH b.showSchedule sch
+            JOIN FETCH sch.show
+            LEFT JOIN FETCH b.bookingSeats
+            WHERE b.user.id = :userId
+            ORDER BY b.createdAt DESC
+            """)
+    List<Booking> findByUserIdOrderByCreatedAtDesc(@Param("userId") Long userId);
+
+    @Query("""
+            SELECT b FROM Booking b
+            JOIN FETCH b.bookingSeats bs
+            JOIN FETCH bs.seat s
+            JOIN FETCH s.zone z
+            JOIN FETCH b.showSchedule sch
+            JOIN FETCH sch.show
+            WHERE b.id = :id
+            """)
     Optional<Booking> findByIdWithSeats(@Param("id") Long id);
 
     @Query("SELECT b.id FROM Booking b WHERE b.status = 'HOLD' AND b.holdExpiresAt < :now")

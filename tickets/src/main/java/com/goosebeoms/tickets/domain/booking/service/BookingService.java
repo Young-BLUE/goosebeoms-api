@@ -6,6 +6,7 @@ import com.goosebeoms.tickets.domain.booking.dto.BookingResponse;
 import com.goosebeoms.tickets.domain.booking.dto.BookingSummaryResponse;
 import com.goosebeoms.tickets.domain.booking.entity.Booking;
 import com.goosebeoms.tickets.domain.booking.entity.BookingSeat;
+import com.goosebeoms.tickets.domain.booking.event.BookingNotificationEvent;
 import com.goosebeoms.tickets.domain.booking.repository.BookingRepository;
 import com.goosebeoms.tickets.domain.booking.repository.BookingSeatRepository;
 import com.goosebeoms.tickets.domain.coupon.entity.UserCoupon;
@@ -17,7 +18,6 @@ import com.goosebeoms.tickets.domain.payment.entity.Payment;
 import com.goosebeoms.tickets.domain.payment.repository.PaymentRepository;
 import com.goosebeoms.tickets.domain.payment.service.PaymentService;
 import com.goosebeoms.tickets.domain.notification.entity.Notification;
-import com.goosebeoms.tickets.domain.notification.service.NotificationService;
 import com.goosebeoms.tickets.domain.queue.service.QueueTokenService;
 import com.goosebeoms.tickets.domain.show.entity.Seat;
 import com.goosebeoms.tickets.domain.show.entity.ShowSchedule;
@@ -54,25 +54,34 @@ public class BookingService {
     private final PaymentRepository paymentRepository;
     private final ObjectProvider<QueueTokenService> queueTokenServiceProvider;
     private final ApplicationEventPublisher eventPublisher;
-    private final NotificationService notificationService;
 
     public BookingResponse hold(String email, BookingRequest request, String queueToken) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        QueueTokenService queueTokenService = queueTokenServiceProvider.getIfAvailable();
-        if (queueTokenService != null) {
-            queueTokenService.requireValid(queueToken, request.scheduleId(), user.getId());
-        }
+        requireValidQueueToken(queueToken, request.scheduleId(), user.getId());
 
         ShowSchedule schedule = scheduleRepository.findByIdWithOptimisticLock(request.scheduleId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.SCHEDULE_NOT_FOUND));
 
-        List<Seat> seats = seatRepository.findByIdsWithPessimisticLock(request.seatIds());
-        if (seats.size() != request.seatIds().size()) {
+        List<Seat> seats = reserveSeats(request.seatIds(), schedule);
+        Pricing pricing = calculatePricing(seats, request.userCouponId(), user.getId());
+
+        return persistBooking(user, schedule, seats, pricing);
+    }
+
+    private void requireValidQueueToken(String queueToken, Long scheduleId, Long userId) {
+        QueueTokenService queueTokenService = queueTokenServiceProvider.getIfAvailable();
+        if (queueTokenService != null) {
+            queueTokenService.requireValid(queueToken, scheduleId, userId);
+        }
+    }
+
+    private List<Seat> reserveSeats(List<Long> seatIds, ShowSchedule schedule) {
+        List<Seat> seats = seatRepository.findByIdsWithPessimisticLock(seatIds);
+        if (seats.size() != seatIds.size()) {
             throw new BusinessException(ErrorCode.SEAT_NOT_AVAILABLE);
         }
-
         boolean hasUnavailable = seats.stream()
                 .anyMatch(s -> s.getStatus() != Seat.SeatStatus.AVAILABLE);
         if (hasUnavailable) {
@@ -81,26 +90,30 @@ public class BookingService {
         seats.forEach(Seat::tempReserve);
         schedule.decreaseAvailableCount(seats.size());
         publishSeatChanges(schedule.getId(), seats);
+        return seats;
+    }
 
+    private Pricing calculatePricing(List<Seat> seats, Long userCouponId, Long userId) {
         int originalPrice = seats.stream().mapToInt(s -> s.getZone().getPrice()).sum();
-        int discountPrice = 0;
-        UserCoupon userCoupon = null;
-
-        if (request.userCouponId() != null) {
-            userCoupon = userCouponRepository.findByIdAndUserId(request.userCouponId(), user.getId())
-                    .orElseThrow(() -> new BusinessException(ErrorCode.COUPON_NOT_AVAILABLE));
-            if (!userCoupon.isUsable(LocalDateTime.now())) {
-                throw new BusinessException(ErrorCode.COUPON_NOT_AVAILABLE);
-            }
-            discountPrice = userCoupon.getCoupon().calculateDiscount(originalPrice);
+        if (userCouponId == null) {
+            return new Pricing(originalPrice, 0, null);
         }
+        UserCoupon userCoupon = userCouponRepository.findByIdAndUserId(userCouponId, userId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.COUPON_NOT_AVAILABLE));
+        if (!userCoupon.isUsable(LocalDateTime.now())) {
+            throw new BusinessException(ErrorCode.COUPON_NOT_AVAILABLE);
+        }
+        int discountPrice = userCoupon.getCoupon().calculateDiscount(originalPrice);
+        return new Pricing(originalPrice, discountPrice, userCoupon);
+    }
 
+    private BookingResponse persistBooking(User user, ShowSchedule schedule, List<Seat> seats, Pricing pricing) {
         Booking booking = bookingRepository.save(Booking.builder()
                 .user(user)
                 .showSchedule(schedule)
-                .userCoupon(userCoupon)
-                .originalPrice(originalPrice)
-                .discountPrice(discountPrice)
+                .userCoupon(pricing.userCoupon())
+                .originalPrice(pricing.originalPrice())
+                .discountPrice(pricing.discountPrice())
                 .build());
 
         List<BookingSeat> bookingSeats = seats.stream()
@@ -114,6 +127,8 @@ public class BookingService {
 
         return BookingResponse.from(booking, bookingSeats);
     }
+
+    private record Pricing(int originalPrice, int discountPrice, UserCoupon userCoupon) {}
 
     public PaymentPrepareResponse preparePayment(Long bookingId, String email, PaymentPrepareRequest request) {
         User user = userRepository.findByEmail(email)
@@ -183,10 +198,12 @@ public class BookingService {
         }
         booking.confirm();
 
-        notificationService.create(user, Notification.Type.BOOKING_CONFIRMED,
+        eventPublisher.publishEvent(new BookingNotificationEvent(
+                user.getId(),
+                Notification.Type.BOOKING_CONFIRMED,
                 "예매가 완료되었습니다",
                 "예매 #" + booking.getId() + " 결제가 완료되었습니다. 좌석을 확정했습니다.",
-                "BOOKING", booking.getId());
+                booking.getId()));
 
         return BookingResponse.from(booking, booking.getBookingSeats());
     }
@@ -277,10 +294,12 @@ public class BookingService {
         if (refundResult.refunded()) msg.append(" ").append(refundResult.message());
         if (couponRestore != null) msg.append(" ").append(couponRestore.message());
 
-        notificationService.create(booking.getUser(), Notification.Type.BOOKING_CANCELLED,
+        eventPublisher.publishEvent(new BookingNotificationEvent(
+                booking.getUser().getId(),
+                Notification.Type.BOOKING_CANCELLED,
                 title,
                 msg.toString(),
-                "BOOKING", booking.getId());
+                booking.getId()));
 
         return BookingCancelResponse.of(booking, couponRestore, refundResult);
     }
@@ -296,10 +315,12 @@ public class BookingService {
         releaseHold(booking);
         booking.expire();
 
-        notificationService.create(booking.getUser(), Notification.Type.BOOKING_EXPIRED,
+        eventPublisher.publishEvent(new BookingNotificationEvent(
+                booking.getUser().getId(),
+                Notification.Type.BOOKING_EXPIRED,
                 "좌석 점유가 만료되었습니다",
                 "예매 #" + booking.getId() + "의 결제 시간이 지나 좌석이 해제되었습니다.",
-                "BOOKING", booking.getId());
+                booking.getId()));
     }
 
     private void releaseHold(Booking booking) {
