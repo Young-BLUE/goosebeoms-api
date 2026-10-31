@@ -29,7 +29,7 @@ class CouponConcurrencyTest extends AbstractIntegrationTest {
     @Test
     void issuedCountNeverExceedsMaxCount() throws InterruptedException {
         int maxCount = 10;
-        int requesters = 100;
+        int requesters = 1000;
 
         Coupon coupon = factory.newCoupon("CONCUR10", maxCount);
         List<User> users = factory.newUsers(requesters, "claimer");
